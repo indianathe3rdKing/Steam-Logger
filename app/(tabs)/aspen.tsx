@@ -1,6 +1,6 @@
 import { Text } from "react-native";
 
-export default function LoginScreen() {
+export default function aspenScreen() {
   return (
     <>
       <Text>Login Screen</Text>
