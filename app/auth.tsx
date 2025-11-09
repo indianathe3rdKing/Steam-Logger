@@ -2,7 +2,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 export default function AuthScreen() {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
@@ -12,6 +12,7 @@ export default function AuthScreen() {
   //   const isSignUp = true;
   const { signIn, signUp } = useAuth();
   const router = useRouter();
+  const theme = useTheme();
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -70,7 +71,11 @@ export default function AuthScreen() {
           style={styles.text}
           mode="outlined"
         />
-        {error && <Text>{error}</Text>}
+        {error && (
+          <Text style={[{ color: theme.colors.error }, styles.errors]}>
+            {error}
+          </Text>
+        )}
         <Button mode="contained" style={styles.button} onPress={handleAuth}>
           {isSignUp ? "Sign Up" : "Sign In"}
         </Button>
@@ -106,5 +111,9 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
+  },
+  errors: {
+    paddingLeft: 24,
+    marginTop: 8,
   },
 });
