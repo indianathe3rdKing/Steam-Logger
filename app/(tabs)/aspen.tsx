@@ -23,6 +23,7 @@ export default function aspenScreen() {
   const [timeText, setTimeText] = useState<boolean>(true);
   const theme = useTheme();
   const { user } = useAuth();
+  const aspenReadings = [];
 
   const [showPickerTime, setShowPickerTime] = useState<boolean>(false);
   const [showPickerDate, setShowPickerDate] = useState<boolean>(false);
