@@ -1,5 +1,5 @@
 export interface AspenData {
-  date: Date;
+  date?: Date;
   meter_1: number;
   meter_2: number;
   condensate: number;
