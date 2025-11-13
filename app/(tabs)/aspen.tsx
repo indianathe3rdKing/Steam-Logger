@@ -1,12 +1,17 @@
 import { ASPEN_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
 import { AspenData, MeterRule } from "@/types/types";
-import Feather from "@expo/vector-icons/Feather";
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { useState } from "react";
-import { Platform, ScrollView, StyleSheet, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { ID, Query } from "react-native-appwrite";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -142,148 +147,210 @@ export default function aspenScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-      <View style={styles.container}>
-        <Text variant="headlineSmall" style={styles.title}>
-          Aspen Screen
-        </Text>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View>
-            <View style={styles.timeContainer}>
-              <Button onPress={() => setShowPickerDate(!showPickerDate)}>
-                {dateText ? "Date" : dateTime.toDateString()}
-              </Button>
-              <Button onPress={() => setShowPickerTime(!showPickerTime)}>
-                {timeText ? "Time" : dateTime.toTimeString()}
-              </Button>
-            </View>
-            {showPickerTime && (
-              <RNDateTimePicker
-                mode="time"
-                display="default"
-                value={dateTime}
-                onChange={onChange}
-              />
-            )}
-            {showPickerDate && (
-              <RNDateTimePicker
-                mode="date"
-                display="default"
-                value={dateTime}
-                onChange={onChange}
-              />
-            )}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      >
+        <View style={styles.container}>
+          <Text variant="headlineSmall" style={styles.title}>
+            Aspen
+          </Text>
+
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
             <View>
+              <View style={styles.timeContainer}>
+                <Button
+                  theme={{
+                    colors: {
+                      primary: "#304a8fff",
+                      outline: "#C7CAD0",
+                      text: "#304a8fff",
+                    },
+                  }}
+                  style={styles.button}
+                  onPress={() => setShowPickerDate(!showPickerDate)}
+                >
+                  {dateText ? "Date" : dateTime.toDateString()}
+                </Button>
+                <Button
+                  theme={{
+                    colors: {
+                      primary: "#304a8fff",
+                      outline: "#C7CAD0",
+                      text: "#304a8fff",
+                    },
+                  }}
+                  style={styles.button}
+                  onPress={() => setShowPickerTime(!showPickerTime)}
+                >
+                  {timeText ? "Time" : dateTime.toTimeString()}
+                </Button>
+              </View>
+              {showPickerTime && (
+                <RNDateTimePicker
+                  mode="time"
+                  display="default"
+                  value={dateTime}
+                  onChange={onChange}
+                />
+              )}
+              {showPickerDate && (
+                <RNDateTimePicker
+                  mode="date"
+                  display="default"
+                  value={dateTime}
+                  onChange={onChange}
+                />
+              )}
+
               <TextInput
+                theme={{
+                  colors: {
+                    primary: "#5A4AE3",
+                    outline: "#C7CAD0",
+                    text: "#111",
+                  },
+                }}
                 label={"Meter 1"}
                 mode="outlined"
                 keyboardType="numeric"
-                style={styles.input}
+                style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 value={meter1.toString()}
-                onChangeText={(text) => setMeter1(Number(text) || 0)}
+                right={<TextInput.Icon icon="check" />}
+                onChangeText={(text) => setMeter1(Number(text))}
               />
-              <Button style={styles.button}>
-                <Feather name="check" size={24} color="black" />
-              </Button>
-            </View>
 
-            <View>
               <TextInput
+                theme={{
+                  colors: {
+                    primary: "#5A4AE3",
+                    outline: "#C7CAD0",
+                    text: "#111",
+                  },
+                }}
                 label={"Meter 2"}
                 mode="outlined"
                 keyboardType="numeric"
-                style={styles.input}
+                style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 value={meter2.toString()}
+                right={<TextInput.Icon icon="check" />}
                 onChangeText={(text) => setMeter2(Number(text) || 0)}
               />
-              <Button style={styles.button}>
-                <Feather name="check" size={24} color="black" />
-              </Button>
-            </View>
 
-            <View>
               <TextInput
+                theme={{
+                  colors: {
+                    primary: "#5A4AE3",
+                    outline: "#C7CAD0",
+                    text: "#111",
+                  },
+                }}
                 label={"Condensate"}
                 mode="outlined"
-                style={styles.input}
+                style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
                 value={condensate.toString()}
-                onChangeText={(text) => setCondensate(Number(text) || 0)}
+                right={<TextInput.Icon icon="check" />}
+                onChangeText={(text) => setCondensate(Number(text))}
               />
 
-              <Button style={styles.button}>
-                <Feather name="check" size={24} color="black" />
-              </Button>
-            </View>
-
-            <View>
               <TextInput
+                theme={{
+                  colors: {
+                    primary: "#5A4AE3",
+                    outline: "#C7CAD0",
+                    text: "#111",
+                  },
+                }}
                 label={"Meter Blue"}
                 mode="outlined"
+                style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
-                style={styles.input}
                 value={meterBlue.toString()}
-                onChangeText={(text) => setMeterBlue(Number(text) || 0)}
+                right={<TextInput.Icon icon="check" />}
+                onChangeText={(text) => setMeterBlue(Number(text))}
               />
-              <Button style={styles.button}>
-                <Feather name="check" size={24} color="black" />
-              </Button>
-            </View>
 
-            <View>
               <TextInput
+                theme={{
+                  colors: {
+                    primary: "#304a8fff",
+                    outline: "#C7CAD0",
+                    text: "#111",
+                  },
+                }}
                 label={"Meter Red"}
                 mode="outlined"
+                style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
-                style={styles.input}
                 value={meterRed.toString()}
-                onChangeText={(text) => setMeterRed(Number(text) || 0)}
+                right={<TextInput.Icon icon="check" />}
+                onChangeText={(text) => setMeterRed(Number(text))}
               />
-              <Button style={styles.button}>
-                <Feather name="check" size={24} color="black" />
-              </Button>
-            </View>
 
-            <View>
               <TextInput
+                theme={{
+                  colors: {
+                    primary: "#304a8fff",
+                    outline: "#C7CAD0",
+                    text: "#111",
+                  },
+                }}
                 label={"Steam Flow Meter"}
                 mode="outlined"
+                style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
-                style={styles.input}
                 value={steamFlowMeter.toString()}
-                onChangeText={(text) => setSteamFlowMeter(Number(text) || 0)}
+                right={<TextInput.Icon icon="check" />}
+                onChangeText={(text) => setSteamFlowMeter(Number(text))}
               />
 
-              <Button style={styles.button}>
-                <Feather name="check" size={24} color="black" />
-              </Button>
-            </View>
-
-            <View>
               <TextInput
+                theme={{
+                  colors: {
+                    primary: "#304a8fff",
+                    outline: "#C7CAD0",
+                    text: "#111",
+                  },
+                }}
                 label={"Aspen"}
                 mode="outlined"
+                style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
-                style={styles.input}
                 value={aspen.toString()}
-                onChangeText={(text) => setAspen(Number(text) || 0)}
+                right={<TextInput.Icon icon="check" />}
+                onChangeText={(text) => setAspen(Number(text))}
               />
 
-              <Button style={styles.button}>
-                <Feather name="check" size={24} color="black" />
+              {error && (
+                <Text style={[{ color: theme.colors.error }, styles.errors]}>
+                  {error}
+                </Text>
+              )}
+
+              <Button
+                theme={{
+                  colors: {
+                    primary: "#26355D",
+                    outline: "#C7CAD0",
+                    text: "#fff",
+                  },
+                }}
+                style={styles.submitButton}
+                mode="contained"
+                onPress={handleSubmit}
+              >
+                Send
               </Button>
             </View>
-            {error && (
-              <Text style={[{ color: theme.colors.error }, styles.errors]}>
-                {error}
-              </Text>
-            )}
-
-            <Button mode="contained" onPress={handleSubmit}>
-              Send
-            </Button>
-          </View>
-        </ScrollView>
-      </View>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -291,9 +358,23 @@ export default function aspenScreen() {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
+    flex: 1,
+
+    // backgroundColor: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
   },
-  input: {},
+  input: {
+    marginBottom: 8,
+    marginTop: 8,
+    color: "white",
+
+    elevation: 1,
+    shadowColor: "#909090ff",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 0.6,
+    borderRadius: 12,
+  },
   errors: {
     paddingLeft: 24,
     marginTop: 8,
@@ -301,7 +382,16 @@ const styles = StyleSheet.create({
   title: {
     textAlign: "center",
     marginBottom: 16,
+    // color: "white",
   },
-  timeContainer: {},
+  timeContainer: { flexDirection: "row", justifyContent: "space-between" },
   button: {},
+  submitButton: {
+    // backgroundColor: "#26355D",
+    // color: "white",
+    // marginTop: 12,
+    minHeight: 50,
+
+    justifyContent: "center",
+  },
 });
