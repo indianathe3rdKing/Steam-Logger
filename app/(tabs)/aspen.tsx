@@ -1,11 +1,12 @@
 import { ASPEN_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
+import { AspenData } from "@/types/types";
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import { ID } from "react-native-appwrite";
+import { ID, Query } from "react-native-appwrite";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -21,9 +22,10 @@ export default function aspenScreen() {
   const [error, setError] = useState<string | null>(null);
   const [dateText, setDateText] = useState<boolean>(true);
   const [timeText, setTimeText] = useState<boolean>(true);
+  const [send, setSend] = useState<boolean>(false);
+  let count: number = 0;
   const theme = useTheme();
   const { user } = useAuth();
-  const aspenReadings = [];
 
   const [showPickerTime, setShowPickerTime] = useState<boolean>(false);
   const [showPickerDate, setShowPickerDate] = useState<boolean>(false);
@@ -39,20 +41,79 @@ export default function aspenScreen() {
     }
   };
 
+  const aspenReadings: AspenData = {
+    date: dateTime,
+    meter_1: meter1,
+    meter_2: meter2,
+    condensate: condensate,
+    meter_blue: meterBlue,
+    meter_red: meterRed,
+    steam_flow_meter: steamFlowMeter,
+    aspen: aspen,
+  };
+  const rules = {
+    meter1: { maxDelta: 100, allowSpikeAfter: 6 },
+    meter2: { maxDelta: 100, allowSpikeAfter: 6 },
+    condensate: { maxDelta: 100, allowSpikeAfter: 6 },
+    meterBlue: { maxDelta: 100, allowSpikeAfter: 6 },
+    meterRed: { maxDelta: 100, allowSpikeAfter: 6 },
+    steamFlowMeter: { maxDelta: 50000, allowSpikeAfter: 6 },
+    aspen: { maxDelta: 50, allowSpikeAfter: 6 },
+  };
+
   const handleSubmit = async () => {
     if (!user) return;
 
     try {
-      await databases.createDocument(DATABASE_ID, ASPEN_TABLE_ID, ID.unique(), {
-        date: dateTime.toISOString(),
-        meter_1: meter1,
-        meter_2: meter2,
-        condensate: condensate,
-        meter_blue: meterBlue,
-        meter_red: meterRed,
-        steam_flow_meter: steamFlowMeter,
-        aspen: aspen,
-      });
+      const lastResponse = await databases.listDocuments(
+        DATABASE_ID,
+        ASPEN_TABLE_ID,
+        [Query.orderDesc("date"), Query.limit(1)]
+      );
+      const lastEntry = lastResponse.documents[0];
+
+      if (lastEntry) {
+        Object.keys(aspenReadings).forEach((key) => {
+          const prevReading = lastEntry[key];
+          const currentReading = aspenReadings[key as keyof AspenData];
+
+          if (
+            typeof prevReading === "number" &&
+            typeof currentReading === "number"
+          ) {
+            const difference = currentReading - prevReading;
+            console.log(
+              `Difference for ${currentReading} & ${prevReading}: ${difference}`
+            );
+            if (difference < 0) {
+              setError(
+                `Current reading of ${key} is less than previous reading. Please re-check your reading.`
+              );
+              return;
+            } else if (difference > 100) {
+              setError(
+                `Current reading of ${key} differs from previous reading by more than 100 units. Please re-check your reading.`
+              );
+              return;
+            } else {
+              count++;
+              console.log("Current count:", count);
+            }
+          }
+        });
+
+        if (count === 7) {
+          console.log(count);
+          await databases.createDocument(
+            DATABASE_ID,
+            ASPEN_TABLE_ID,
+            ID.unique(),
+            {
+              ...aspenReadings,
+            }
+          );
+        }
+      }
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
