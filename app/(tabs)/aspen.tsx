@@ -28,7 +28,7 @@ export default function aspenScreen() {
   const [error, setError] = useState<string | null>(null);
   const [dateText, setDateText] = useState<boolean>(true);
   const [timeText, setTimeText] = useState<boolean>(true);
-  const [send, setSend] = useState<boolean>(false);
+
   let count: number = 0;
   const theme = useTheme();
   const { user } = useAuth();
@@ -67,6 +67,26 @@ export default function aspenScreen() {
     steam_flow_meter: { maxDelta: 50000, allowSpikeAfter: 6 },
     aspen: { maxDelta: 50, allowSpikeAfter: 6 },
   };
+
+  function clearForm() {
+    setMeter1(0);
+    setMeter2(0);
+    setCondensate(0);
+    setMeterBlue(0);
+    setMeterRed(0);
+    setSteamFlowMeter(0);
+    setAspen(0);
+
+    // Reset Date and Time to current
+    setDateTime(new Date());
+
+    // Reset error
+    setError(null);
+
+    // Reset date and time text indicators
+    setDateText(true);
+    setTimeText(true);
+  }
 
   const handleSubmit = async () => {
     if (!user) return;
@@ -127,7 +147,6 @@ export default function aspenScreen() {
         });
 
         if (count === 7) {
-          console.log(count);
           await databases.createDocument(
             DATABASE_ID,
             ASPEN_TABLE_ID,
@@ -136,6 +155,7 @@ export default function aspenScreen() {
               ...aspenReadings,
             }
           );
+          clearForm();
         }
       }
     } catch (error) {
@@ -387,9 +407,7 @@ const styles = StyleSheet.create({
   timeContainer: { flexDirection: "row", justifyContent: "space-between" },
   button: {},
   submitButton: {
-    // backgroundColor: "#26355D",
-    // color: "white",
-    // marginTop: 12,
+    marginTop: 12,
     minHeight: 50,
 
     justifyContent: "center",
