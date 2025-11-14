@@ -6,6 +6,7 @@ import RNDateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -156,6 +157,7 @@ export default function aspenScreen() {
             }
           );
           clearForm();
+          Alert.alert("Success", "Aspen readings submitted successfully.");
         }
       }
     } catch (error) {
