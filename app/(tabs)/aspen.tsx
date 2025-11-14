@@ -33,6 +33,14 @@ export default function aspenScreen() {
   let count: number = 0;
   const theme = useTheme();
   const { user } = useAuth();
+  const [editableMeter1, setEditableMeter1] = useState<boolean>(false);
+  const [editableMeter2, setEditableMeter2] = useState<boolean>(false);
+  const [editableCondensate, setEditableCondensate] = useState<boolean>(false);
+  const [editableRed, setEditableRed] = useState<boolean>(false);
+  const [editableBlue, setEditableBlue] = useState<boolean>(false);
+  const [editableSteamFlowMeter, setEditableSteamFlowMeter] =
+    useState<boolean>(false);
+  const [editableAspen, setEditableAspen] = useState<boolean>(false);
 
   const [showPickerTime, setShowPickerTime] = useState<boolean>(false);
   const [showPickerDate, setShowPickerDate] = useState<boolean>(false);
@@ -67,6 +75,16 @@ export default function aspenScreen() {
     meter_red: { maxDelta: 100, allowSpikeAfter: 6 },
     steam_flow_meter: { maxDelta: 50000, allowSpikeAfter: 6 },
     aspen: { maxDelta: 50, allowSpikeAfter: 6 },
+  };
+
+  const disabled: Record<string, boolean> = {
+    meter1: false,
+    meter2: false,
+    condensate: false,
+    meterBlue: false,
+    meterRed: false,
+    steamFlowMeter: false,
+    aspen: false,
   };
 
   function clearForm() {
@@ -120,15 +138,13 @@ export default function aspenScreen() {
           const prevReading = lastEntry[key as keyof AspenData];
           const currentReading = aspenReadings[key as keyof AspenData];
           const rule = rules[key as keyof AspenData];
-          let time = 0;
+
           if (
             typeof prevReading === "number" &&
             typeof currentReading === "number"
           ) {
             const difference = currentReading - prevReading;
-            console.log(
-              `Difference for ${currentReading} & ${prevReading}: ${difference}`
-            );
+
             if (difference < 0 || currentReading < prevReading) {
               setError(
                 `Current reading of ${key} is less than previous reading. Please re-check your reading`
@@ -175,16 +191,12 @@ export default function aspenScreen() {
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
         <View style={styles.container}>
-          <Text variant="headlineSmall" style={styles.title}>
-            Aspen
-          </Text>
-
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled"
           >
-            <View>
+            <View style={styles.content}>
               <View style={styles.timeContainer}>
                 <Button
                   theme={{
@@ -233,9 +245,9 @@ export default function aspenScreen() {
               <TextInput
                 theme={{
                   colors: {
-                    primary: "#5A4AE3",
+                    primary: "#304a8fff",
                     outline: "#C7CAD0",
-                    text: "#111",
+                    text: "#304a8fff",
                   },
                 }}
                 label={"Meter 1"}
@@ -243,16 +255,24 @@ export default function aspenScreen() {
                 keyboardType="numeric"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 value={meter1.toString()}
-                right={<TextInput.Icon icon="check" />}
+                right={
+                  <TextInput.Icon
+                    icon="check"
+                    onPress={() => {
+                      setEditableMeter1((prev) => !prev);
+                    }}
+                  />
+                }
                 onChangeText={(text) => setMeter1(Number(text))}
+                disabled={editableMeter1}
               />
 
               <TextInput
                 theme={{
                   colors: {
-                    primary: "#5A4AE3",
+                    primary: "#304a8fff",
                     outline: "#C7CAD0",
-                    text: "#111",
+                    text: "#304a8fff",
                   },
                 }}
                 label={"Meter 2"}
@@ -260,16 +280,24 @@ export default function aspenScreen() {
                 keyboardType="numeric"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 value={meter2.toString()}
-                right={<TextInput.Icon icon="check" />}
+                right={
+                  <TextInput.Icon
+                    icon="check"
+                    onPress={() => {
+                      setEditableMeter2((prev) => !prev);
+                    }}
+                  />
+                }
                 onChangeText={(text) => setMeter2(Number(text) || 0)}
+                disabled={editableMeter2}
               />
 
               <TextInput
                 theme={{
                   colors: {
-                    primary: "#5A4AE3",
+                    primary: "#304a8fff",
                     outline: "#C7CAD0",
-                    text: "#111",
+                    text: "#304a8fff",
                   },
                 }}
                 label={"Condensate"}
@@ -277,16 +305,27 @@ export default function aspenScreen() {
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
                 value={condensate.toString()}
-                right={<TextInput.Icon icon="check" />}
+                right={
+                  <TextInput.Icon
+                    icon="check"
+                    onPress={() => {
+                      setEditableCondensate((prev) => !prev);
+                    }}
+                  />
+                }
                 onChangeText={(text) => setCondensate(Number(text))}
+                disabled={editableCondensate}
               />
 
               <TextInput
                 theme={{
                   colors: {
-                    primary: "#5A4AE3",
+                    // primary: "#5A4AE3",
+                    // outline: "#C7CAD0",
+                    // text: "#111",
+                    primary: "#304a8fff",
                     outline: "#C7CAD0",
-                    text: "#111",
+                    text: "#304a8fff",
                   },
                 }}
                 label={"Meter Blue"}
@@ -294,8 +333,16 @@ export default function aspenScreen() {
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
                 value={meterBlue.toString()}
-                right={<TextInput.Icon icon="check" />}
+                right={
+                  <TextInput.Icon
+                    icon="check"
+                    onPress={() => {
+                      setEditableBlue((prev) => !prev);
+                    }}
+                  />
+                }
                 onChangeText={(text) => setMeterBlue(Number(text))}
+                disabled={editableBlue}
               />
 
               <TextInput
@@ -303,7 +350,7 @@ export default function aspenScreen() {
                   colors: {
                     primary: "#304a8fff",
                     outline: "#C7CAD0",
-                    text: "#111",
+                    text: "#304a8fff",
                   },
                 }}
                 label={"Meter Red"}
@@ -311,8 +358,16 @@ export default function aspenScreen() {
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
                 value={meterRed.toString()}
-                right={<TextInput.Icon icon="check" />}
+                right={
+                  <TextInput.Icon
+                    icon="check"
+                    onPress={() => {
+                      setEditableRed((prev) => !prev);
+                    }}
+                  />
+                }
                 onChangeText={(text) => setMeterRed(Number(text))}
+                disabled={editableRed}
               />
 
               <TextInput
@@ -320,7 +375,7 @@ export default function aspenScreen() {
                   colors: {
                     primary: "#304a8fff",
                     outline: "#C7CAD0",
-                    text: "#111",
+                    text: "#304a8fff",
                   },
                 }}
                 label={"Steam Flow Meter"}
@@ -328,8 +383,16 @@ export default function aspenScreen() {
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
                 value={steamFlowMeter.toString()}
-                right={<TextInput.Icon icon="check" />}
+                right={
+                  <TextInput.Icon
+                    icon="check"
+                    onPress={() => {
+                      setEditableSteamFlowMeter((prev) => !prev);
+                    }}
+                  />
+                }
                 onChangeText={(text) => setSteamFlowMeter(Number(text))}
+                disabled={editableSteamFlowMeter}
               />
 
               <TextInput
@@ -345,8 +408,16 @@ export default function aspenScreen() {
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
                 value={aspen.toString()}
-                right={<TextInput.Icon icon="check" />}
+                right={
+                  <TextInput.Icon
+                    icon="check"
+                    onPress={() => {
+                      setEditableAspen((prev) => !prev);
+                    }}
+                  />
+                }
                 onChangeText={(text) => setAspen(Number(text))}
+                disabled={editableAspen}
               />
 
               {error && (
@@ -382,8 +453,10 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 40,
     flex: 1,
-
-    // backgroundColor: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
   },
   input: {
     marginBottom: 8,
