@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { ID, Query } from "react-native-appwrite";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import Animated, { useSharedValue } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function aspenScreen() {
@@ -158,7 +159,6 @@ export default function aspenScreen() {
               return;
             } else {
               count++;
-              console.log("Current count:", count);
             }
           }
         });
@@ -181,6 +181,11 @@ export default function aspenScreen() {
         setError(error.message);
       }
     }
+  };
+
+  const height = useSharedValue(100);
+  const handlePress = () => {
+    height.value = height.value + 10;
   };
 
   return (
@@ -426,7 +431,7 @@ export default function aspenScreen() {
                 </Text>
               )}
 
-              <Button
+              <Animated.Button
                 theme={{
                   colors: {
                     primary: "#26355D",
@@ -439,7 +444,7 @@ export default function aspenScreen() {
                 onPress={handleSubmit}
               >
                 Send
-              </Button>
+              </Animated.Button>
             </View>
           </ScrollView>
         </View>
@@ -483,7 +488,7 @@ const styles = StyleSheet.create({
   button: {},
   submitButton: {
     marginTop: 12,
-    minHeight: 50,
+    height: 50,
 
     justifyContent: "center",
   },
