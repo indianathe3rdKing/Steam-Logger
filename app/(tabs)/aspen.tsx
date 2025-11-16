@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { ID, Query } from "react-native-appwrite";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
-import Animated, { useSharedValue } from "react-native-reanimated";
+import { useSharedValue } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function aspenScreen() {
@@ -431,7 +431,7 @@ export default function aspenScreen() {
                 </Text>
               )}
 
-              <Animated.Button
+              <Button
                 theme={{
                   colors: {
                     primary: "#26355D",
@@ -444,7 +444,7 @@ export default function aspenScreen() {
                 onPress={handleSubmit}
               >
                 Send
-              </Animated.Button>
+              </Button>
             </View>
           </ScrollView>
         </View>

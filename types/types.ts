@@ -9,6 +9,17 @@ export interface AspenData {
   aspen: number;
 }
 
+export interface freseniusData {
+  date?: Date;
+
+  meter_fk: number;
+  meter_sh: number;
+  hfo: number;
+  make_up: number;
+  steam_flow_meter_1: number;
+  steam_flow_meter_2: number;
+}
+
 export interface MeterRule {
   maxDelta: number;
   allowSpikeAfter?: number;

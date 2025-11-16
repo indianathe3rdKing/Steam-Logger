@@ -10,3 +10,5 @@ export const databases = new Databases(client);
 
 export const DATABASE_ID = process.env.EXPO_PUBLIC_DB_ID!;
 export const ASPEN_TABLE_ID = process.env.EXPO_PUBLIC_DB_ASPEN_TABLE_ID!;
+export const FRESENIUS_TABLE_ID =
+  process.env.EXPO_PUBLIC_DB_FRESENIUS_TABLE_ID!;
