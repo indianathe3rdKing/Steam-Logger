@@ -489,7 +489,6 @@ const styles = StyleSheet.create({
   submitButton: {
     marginTop: 12,
     height: 50,
-
     justifyContent: "center",
   },
 });

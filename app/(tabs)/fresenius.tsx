@@ -1,11 +1,6 @@
-import {
-  ASPEN_TABLE_ID,
-  DATABASE_ID,
-  databases,
-  FRESENIUS_TABLE_ID,
-} from "@/lib/appwrite";
+import { DATABASE_ID, databases, FRESENIUS_TABLE_ID } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
-import { AspenData, freseniusData, MeterRule } from "@/types/types";
+import { freseniusData, MeterRule } from "@/types/types";
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -101,11 +96,12 @@ export default function freseniusScreen() {
 
   const handleSubmit = async () => {
     if (!user) return;
+    let send: boolean = true;
 
     try {
       const lastResponse = await databases.listDocuments(
         DATABASE_ID,
-        ASPEN_TABLE_ID,
+        FRESENIUS_TABLE_ID,
         [Query.orderDesc("date"), Query.limit(1)]
       );
       const lastEntry = lastResponse.documents[0];
@@ -127,7 +123,7 @@ export default function freseniusScreen() {
       }
       if (lastEntry) {
         Object.keys(freseniusReadings).forEach((key) => {
-          const prevReading = lastEntry[key as keyof AspenData];
+          const prevReading = lastEntry[key as keyof freseniusData];
           const currentReading = freseniusReadings[key as keyof freseniusData];
           const rule = rules[key as keyof freseniusData];
 
@@ -141,20 +137,19 @@ export default function freseniusScreen() {
               setError(
                 `Current reading of ${key} is less than previous reading. Please re-check your reading`
               );
-              return;
+              send = false;
             }
             if (difference > rule.maxDelta && timeExceeded) {
               setError(
                 `Current reading of ${key} differs from previous reading by more than ${rule.maxDelta} units. Please re-check your reading. ${timeExceeded}`
               );
-              return;
-            } else {
-              count++;
+              send = false;
             }
+            console.log("Difference for", key, ":", difference, "send =", send);
           }
         });
 
-        if (count === 7) {
+        if (send) {
           await databases.createDocument(
             DATABASE_ID,
             FRESENIUS_TABLE_ID,
@@ -164,7 +159,7 @@ export default function freseniusScreen() {
             }
           );
           clearForm();
-          Alert.alert("Success", "Aspen readings submitted successfully.");
+          Alert.alert("Success", "Fresenius readings submitted successfully.");
         }
       }
     } catch (error) {
@@ -246,7 +241,7 @@ export default function freseniusScreen() {
                     text: "#304a8fff",
                   },
                 }}
-                label={"Meter 1"}
+                label={"Meter FK"}
                 mode="outlined"
                 keyboardType="numeric"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
@@ -271,7 +266,7 @@ export default function freseniusScreen() {
                     text: "#304a8fff",
                   },
                 }}
-                label={"Meter 2"}
+                label={"Make Up"}
                 mode="outlined"
                 keyboardType="numeric"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
@@ -296,7 +291,7 @@ export default function freseniusScreen() {
                     text: "#304a8fff",
                   },
                 }}
-                label={"Condensate"}
+                label={"Meter SH"}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
@@ -324,7 +319,7 @@ export default function freseniusScreen() {
                     text: "#304a8fff",
                   },
                 }}
-                label={"Meter Blue"}
+                label={"HFO"}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
@@ -349,7 +344,7 @@ export default function freseniusScreen() {
                     text: "#304a8fff",
                   },
                 }}
-                label={"Meter Red"}
+                label={"Steam Flow Meter 1"}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
@@ -374,7 +369,7 @@ export default function freseniusScreen() {
                     text: "#304a8fff",
                   },
                 }}
-                label={"Steam Flow Meter"}
+                label={"Steam Flow Meter 2"}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
