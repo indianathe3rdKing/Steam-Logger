@@ -15,10 +15,34 @@ const screenWidth = Dimensions.get("window").width;
 const frequency = ["day", "month", "year"];
 type Frequency = (typeof frequency)[number];
 
-export const AspenOverview = () => {
+export function AspenOverview() {
   const { signOut, user } = useAuth();
   const [visible, setVisible] = useState(true);
   const [mode, setMode] = useState<Frequency>("day");
+
+  const fetchData = (mode: Frequency) => {
+    // Fetch data based on mode
+    const date = new Date();
+    const day = date.setDate(date.getDate() - 30);
+    const month = date.setMonth(date.getMonth() - 12);
+    const year = date.setFullYear(date.getFullYear() - 1);
+    let startDate;
+    switch (mode) {
+      case "day":
+        startDate = new Date(date);
+        startDate.setDate(date.getDate() - 30);
+        break;
+      case "month":
+        startDate = new Date(date);
+        startDate.setMonth(date.getMonth() - 12);
+        break;
+      case "year":
+        startDate = new Date(date);
+        startDate.setFullYear(date.getFullYear() - 5);
+        break;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.signOutContainer}>
@@ -114,7 +138,7 @@ export const AspenOverview = () => {
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
