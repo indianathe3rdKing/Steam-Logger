@@ -1,4 +1,6 @@
+import { DropdownMenu } from "@/components/dropdown-menu";
 import { useAuth } from "@/lib/auth-context";
+import { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -12,9 +14,17 @@ import { LineChart } from "react-native-chart-kit";
 import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 const screenWidth = Dimensions.get("window").width;
+const frequency = ["day", "month", "year"];
+type Frequency = (typeof frequency)[number];
 
 export default function homePage() {
   const { signOut, user } = useAuth();
+  const [visible, setVisible] = useState(true);
+  const [mode, setMode] = useState<Frequency>("day");
+
+  const handleDropdownTriggerPress = (key: string) => {
+    console.log("Dropdown item selected:", key);
+  };
 
   const fetchData = () => {};
 
@@ -110,7 +120,9 @@ export default function homePage() {
             }}
           />
         </View>
-        <View></View>
+        <View>
+          <DropdownMenu onSelect={handleDropdownTriggerPress} items={[]} />
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

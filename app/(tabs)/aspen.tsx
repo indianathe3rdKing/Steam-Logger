@@ -405,7 +405,7 @@ export default function aspenScreen() {
                   colors: {
                     primary: "#304a8fff",
                     outline: "#C7CAD0",
-                    text: "#304a8fff",
+                    text: "#333",
                   },
                 }}
                 label={"Aspen"}
