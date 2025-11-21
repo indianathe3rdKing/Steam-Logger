@@ -14,7 +14,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     if (!user && !inAuthRoute && !isLoading) {
       router.replace("/auth");
     } else if (user && inAuthRoute && !isLoading) {
-      router.replace("/");
+      router.replace("/(tabs)/home");
     }
   }, [user, segments]);
   return <>{children}</>;
