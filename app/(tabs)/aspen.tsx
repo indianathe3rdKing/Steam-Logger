@@ -58,7 +58,15 @@ export default function aspenScreen() {
   };
 
   const aspenReadings: AspenData = {
-    date: dateTime,
+    date: new Date(
+      dateTime.getFullYear(),
+      dateTime.getMonth(),
+      dateTime.getDate()
+    ),
+    time: dateTime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
     meter_1: meter1,
     meter_2: meter2,
     condensate: condensate,
@@ -69,6 +77,7 @@ export default function aspenScreen() {
   };
   const rules: Record<keyof AspenData, MeterRule> = {
     date: { maxDelta: 0 },
+    time: { maxDelta: 0 },
     meter_1: { maxDelta: 100, allowSpikeAfter: 6 },
     meter_2: { maxDelta: 100, allowSpikeAfter: 6 },
     condensate: { maxDelta: 100, allowSpikeAfter: 6 },
@@ -214,7 +223,13 @@ export default function aspenScreen() {
                   style={styles.button}
                   onPress={() => setShowPickerDate(!showPickerDate)}
                 >
-                  {dateText ? "Date" : dateTime.toDateString()}
+                  {dateText
+                    ? "Date"
+                    : dateTime.toLocaleDateString("default", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}
                 </Button>
                 <Button
                   theme={{
@@ -227,7 +242,12 @@ export default function aspenScreen() {
                   style={styles.button}
                   onPress={() => setShowPickerTime(!showPickerTime)}
                 >
-                  {timeText ? "Time" : dateTime.toTimeString()}
+                  {timeText
+                    ? "Time"
+                    : dateTime.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                 </Button>
               </View>
               {showPickerTime && (

@@ -1,5 +1,6 @@
 export interface AspenData {
   date?: Date;
+  time?: Date;
   meter_1: number;
   meter_2: number;
   condensate: number;
@@ -11,7 +12,7 @@ export interface AspenData {
 
 export interface freseniusData {
   date?: Date;
-
+  time?: Date;
   meter_fk: number;
   meter_sh: number;
   hfo: number;

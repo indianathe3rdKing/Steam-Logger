@@ -1,4 +1,6 @@
+import { ASPEN_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
+import { AspenData } from "@/types/types";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -8,6 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { Query } from "react-native-appwrite";
 import { LineChart } from "react-native-chart-kit";
 import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,27 +23,31 @@ export function AspenOverview() {
   const [visible, setVisible] = useState(true);
   const [mode, setMode] = useState<Frequency>("day");
 
-  const fetchData = (mode: Frequency) => {
+  const fetchData = async (mode: Frequency) => {
     // Fetch data based on mode
-    const date = new Date();
-    const day = date.setDate(date.getDate() - 30);
-    const month = date.setMonth(date.getMonth() - 12);
-    const year = date.setFullYear(date.getFullYear() - 1);
+    const now = new Date();
+  
     let startDate;
     switch (mode) {
       case "day":
-        startDate = new Date(date);
-        startDate.setDate(date.getDate() - 30);
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 30);
         break;
       case "month":
-        startDate = new Date(date);
-        startDate.setMonth(date.getMonth() - 12);
+        startDate = new Date(now);
+        startDate.setMonth(now.getMonth() - 12);
         break;
       case "year":
-        startDate = new Date(date);
-        startDate.setFullYear(date.getFullYear() - 5);
+        startDate = new Date(now);
+        startDate.setFullYear(now.getFullYear() - 5);
         break;
     }
+    const dataResponse = await databases.listDocuments(
+      DATABASE_ID,ASPEN_TABLE_ID,[
+        Query.greaterThanEqual("date",startDate!.toISOString()),
+        Query.lessThanEqual("date",now.toISOString()),
+      ]
+    )
   };
 
   return (
