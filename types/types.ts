@@ -25,3 +25,7 @@ export interface MeterRule {
   maxDelta: number;
   allowSpikeAfter?: number;
 }
+
+export interface readingsRecord {
+  [key: string]: number[];
+}

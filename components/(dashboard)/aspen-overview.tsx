@@ -1,5 +1,6 @@
 import { ASPEN_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
+import { AspenData, readingsRecord } from "@/types/types";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -21,6 +22,16 @@ export function AspenOverview() {
   const { signOut, user } = useAuth();
   const [visible, setVisible] = useState(true);
   const [mode, setMode] = useState<Frequency>("day");
+  const [readings, setReadings] = useState<AspenData[]>();
+  const columns: readingsRecord = {
+    reading1: [],
+    reading2: [],
+    reading3: [],
+    reading4: [],
+    reading5: [],
+    reading6: [],
+    reading7: [],
+  };
 
   const fetchData = async (mode: Frequency) => {
     // Fetch data based on mode
@@ -50,7 +61,30 @@ export function AspenOverview() {
         Query.equal("time", "09:38"),
       ]
     );
-    console.log("Aspen Data:", dataResponse);
+
+    const fetchedReadings = dataResponse.documents.map(
+      (item) => item as unknown as AspenData
+    );
+
+    fetchedReadings.forEach((reading) => {
+      const meterReadings = [
+        reading.meter_1,
+        reading.meter_2,
+        reading.condensate,
+        reading.meter_blue,
+        reading.meter_red,
+        reading.steam_flow_meter,
+        reading.aspen,
+      ];
+      meterReadings.forEach((value, index) => {
+        if (typeof value === "number") {
+          const columnKey = `reading${index + 1}` as keyof readingsRecord;
+          columns[columnKey].push(value);
+        }
+      });
+    });
+
+    console.log("Columns:", columns);
   };
 
   return (
