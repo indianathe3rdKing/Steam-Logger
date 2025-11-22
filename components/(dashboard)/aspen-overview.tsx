@@ -34,6 +34,11 @@ export function AspenOverview() {
   };
 
   const fetchData = async (mode: Frequency) => {
+    // Clear columns first to prevent duplication
+    Object.keys(columns).forEach((key) => {
+      columns[key as keyof readingsRecord] = [];
+    });
+
     // Fetch data based on mode
     const now = new Date();
 
@@ -79,6 +84,9 @@ export function AspenOverview() {
       meterReadings.forEach((value, index) => {
         if (typeof value === "number") {
           const columnKey = `reading${index + 1}` as keyof readingsRecord;
+          if (!columns[columnKey]) {
+            columns[columnKey] = [];
+          }
           columns[columnKey].push(value);
         }
       });
