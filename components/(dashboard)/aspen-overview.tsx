@@ -17,12 +17,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const screenWidth = Dimensions.get("window").width;
 const frequency = ["day", "month", "year"];
 type Frequency = (typeof frequency)[number];
+type Columns = Record<string, number[]>;
 
 export function AspenOverview() {
   const { signOut, user } = useAuth();
   const [visible, setVisible] = useState(true);
   const [mode, setMode] = useState<Frequency>("day");
   const [readings, setReadings] = useState<AspenData[]>();
+  const [newColumns, setNewColumns] = useState<readingsRecord>({});
+  const [label, setLabel] = useState<string[]>([]);
   const columns: readingsRecord = {
     reading1: [],
     reading2: [],
@@ -32,8 +35,61 @@ export function AspenOverview() {
     reading6: [],
     reading7: [],
   };
+  const [column, setColumns] = useState<Columns>({});
+  const [labels, setlabels] = useState<Date[]>();
+
+  const last12Months = () => {
+    const months = [];
+    for (let i = 0; i < 12; i++) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        year: "2-digit",
+      });
+      months.push(formattedDate);
+    }
+    const reversedMonths = months.reverse();
+
+    return reversedMonths;
+  };
+
+  const last30Days = () => {
+    const days = [];
+    for (let i = 0; i < 30; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      days.push(formattedDate);
+    }
+    const reversedDays = days.reverse();
+    return reversedDays;
+  };
+
+  const last7Days = () => {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      days.push(formattedDate);
+    }
+    const rev = days.reverse();
+    console.log("the days", rev);
+
+    return rev;
+  };
 
   const fetchData = async (mode: Frequency) => {
+    const months = [];
+    const days = [];
     // Clear columns first to prevent duplication
     Object.keys(columns).forEach((key) => {
       columns[key as keyof readingsRecord] = [];
@@ -41,20 +97,22 @@ export function AspenOverview() {
 
     // Fetch data based on mode
     const now = new Date();
-
     let startDate;
     switch (mode) {
       case "day":
         startDate = new Date(now);
         startDate.setDate(now.getDate() - 30);
+        setLabel(last7Days());
         break;
       case "month":
         startDate = new Date(now);
         startDate.setMonth(now.getMonth() - 12);
+        setLabel(last30Days());
         break;
       case "year":
         startDate = new Date(now);
         startDate.setFullYear(now.getFullYear() - 5);
+        setLabel(last12Months());
         break;
     }
     const dataResponse = await databases.listDocuments(
@@ -92,7 +150,8 @@ export function AspenOverview() {
       });
     });
 
-    console.log("Columns:", columns);
+    console.log("Columns:", columns.reading1);
+    console.log("reversed last 30", label);
   };
 
   return (
@@ -100,7 +159,7 @@ export function AspenOverview() {
       <View style={styles.signOutContainer}>
         <Text></Text>
         <Button
-          onPress={() => fetchData("day")}
+          onPress={() => fetchData("year")}
           icon={"logout"}
           theme={{
             colors: {
