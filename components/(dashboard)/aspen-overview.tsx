@@ -1,6 +1,5 @@
 import { ASPEN_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
-import { AspenData } from "@/types/types";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -26,7 +25,7 @@ export function AspenOverview() {
   const fetchData = async (mode: Frequency) => {
     // Fetch data based on mode
     const now = new Date();
-  
+
     let startDate;
     switch (mode) {
       case "day":
@@ -43,11 +42,15 @@ export function AspenOverview() {
         break;
     }
     const dataResponse = await databases.listDocuments(
-      DATABASE_ID,ASPEN_TABLE_ID,[
-        Query.greaterThanEqual("date",startDate!.toISOString()),
-        Query.lessThanEqual("date",now.toISOString()),
+      DATABASE_ID,
+      ASPEN_TABLE_ID,
+      [
+        Query.greaterThanEqual("date", startDate!.toISOString()),
+        Query.lessThanEqual("date", now.toISOString()),
+        Query.equal("time", "09:38"),
       ]
-    )
+    );
+    console.log("Aspen Data:", dataResponse);
   };
 
   return (
@@ -55,7 +58,7 @@ export function AspenOverview() {
       <View style={styles.signOutContainer}>
         <Text></Text>
         <Button
-          onPress={signOut}
+          onPress={() => fetchData("day")}
           icon={"logout"}
           theme={{
             colors: {

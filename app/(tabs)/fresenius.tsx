@@ -67,6 +67,7 @@ export default function freseniusScreen() {
   };
   const rules: Record<keyof freseniusData, MeterRule> = {
     date: { maxDelta: 0 },
+    time: { maxDelta: 0 },
     meter_fk: { maxDelta: 100, allowSpikeAfter: 6 },
     meter_sh: { maxDelta: 100, allowSpikeAfter: 6 },
     make_up: { maxDelta: 100, allowSpikeAfter: 6 },
