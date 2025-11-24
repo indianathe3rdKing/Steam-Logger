@@ -1,10 +1,10 @@
-import { ASPEN_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
+import { ASPEN_TABLE_ID, client, DATABASE_ID, databases } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
-import { AspenData, MeterRule } from "@/types/types";
+import { AspenData, MeterRule, RealtimeResponse } from "@/types/types";
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -30,6 +30,24 @@ export default function aspenScreen() {
   const [error, setError] = useState<string | null>(null);
   const [dateText, setDateText] = useState<boolean>(true);
   const [timeText, setTimeText] = useState<boolean>(true);
+  const [aspenDelta, setAspenDelta] = useState<AspenData>({
+    date: new Date(
+      dateTime.getFullYear(),
+      dateTime.getMonth(),
+      dateTime.getDate()
+    ),
+    time: dateTime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    meter_1: 0,
+    meter_2: 0,
+    condensate: 0,
+    meter_blue: 0,
+    meter_red: 0,
+    steam_flow_meter: 0,
+    aspen: 0,
+  });
 
   let count: number = 0;
   const theme = useTheme();
@@ -75,6 +93,7 @@ export default function aspenScreen() {
     steam_flow_meter: steamFlowMeter,
     aspen: aspen,
   };
+
   const rules: Record<keyof AspenData, MeterRule> = {
     date: { maxDelta: 0 },
     time: { maxDelta: 0 },
@@ -85,16 +104,6 @@ export default function aspenScreen() {
     meter_red: { maxDelta: 100, allowSpikeAfter: 6 },
     steam_flow_meter: { maxDelta: 50000, allowSpikeAfter: 6 },
     aspen: { maxDelta: 100, allowSpikeAfter: 6 },
-  };
-
-  const disabled: Record<string, boolean> = {
-    meter1: false,
-    meter2: false,
-    condensate: false,
-    meterBlue: false,
-    meterRed: false,
-    steamFlowMeter: false,
-    aspen: false,
   };
 
   function clearForm() {
@@ -117,6 +126,29 @@ export default function aspenScreen() {
     setTimeText(true);
   }
 
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = `databases.${DATABASE_ID}.collections.${ASPEN_TABLE_ID}.documents`;
+    const subscription = client.subscribe(
+      channel,
+      async (response: RealtimeResponse) => {
+        const isCreate = response.events.some((event) =>
+          event.includes("create")
+        );
+        const isUpdate = response.events.some((event) =>
+          event.includes("update")
+        );
+        if (isCreate || isUpdate) {
+          await databases.listDocuments(DATABASE_ID, ASPEN_TABLE_ID, [
+            Query.orderDesc("date"),
+            Query.limit(1),
+          ]);
+        }
+      }
+    );
+  });
+
   const handleSubmit = async () => {
     if (!user) return;
 
@@ -138,22 +170,23 @@ export default function aspenScreen() {
           hoursDiff = dateDiff / (1000 * 60 * 60);
           timeExceeded = hoursDiff < 6;
 
-          console.log(
-            "time Exceed" + timeExceeded + " hoursDiff: " + hoursDiff.toFixed(2)
-          );
+          // create Aspen Delta from
         }
       }
       if (lastEntry) {
+        let newDelta = { ...aspenDelta };
         Object.keys(aspenReadings).forEach((key) => {
           const prevReading = lastEntry[key as keyof AspenData];
           const currentReading = aspenReadings[key as keyof AspenData];
           const rule = rules[key as keyof AspenData];
-
           if (
             typeof prevReading === "number" &&
             typeof currentReading === "number"
           ) {
             const difference = currentReading - prevReading;
+            if (typeof aspenDelta[key as keyof AspenData] === "number") {
+              (newDelta as any)[key] = difference;
+            }
 
             if (difference < 0 || currentReading < prevReading) {
               setError(
@@ -161,18 +194,20 @@ export default function aspenScreen() {
               );
               return;
             }
-            // if (difference > rule.maxDelta) {
-            //   setError(
-            //     `Current reading of ${key} differs from previous reading by more than ${rule.maxDelta} units. Please re-check your reading. ${timeExceeded}`
-            //   );
-            //   return;}
-            else {
+            if (difference > rule.maxDelta) {
+              setError(
+                `Current reading of ${key} differs from previous reading by more than ${rule.maxDelta} units. Please re-check your reading. ${timeExceeded}`
+              );
+              return;
+            } else {
               count++;
             }
           }
+          setAspenDelta({ ...newDelta });
         });
 
         if (count === 7) {
+          console.log("The delta ", aspenDelta);
           await databases.createDocument(
             DATABASE_ID,
             ASPEN_TABLE_ID,

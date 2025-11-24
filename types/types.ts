@@ -2,7 +2,7 @@ export interface AspenData {
   date?: Date;
   time?: string;
   meter_1: number;
-  meter_2: number;
+  meter_2?: number;
   condensate: number;
   meter_blue: number;
   meter_red: number;
@@ -28,4 +28,9 @@ export interface MeterRule {
 
 export interface readingsRecord {
   [key: string]: number[];
+}
+
+export interface RealtimeResponse {
+  events: string[];
+  payload: any;
 }

@@ -87,12 +87,8 @@ export function AspenOverview() {
   };
 
   function calculateAxisConfig(data: number[]) {
-    if (!data || data.length === 0) {
-      return 1; // Default interval
-    }
     const max = Math.max(...data);
     const interval = Math.ceil(max / 5);
-    
     return interval;
   }
 
@@ -159,8 +155,6 @@ export function AspenOverview() {
       });
     });
     setNewColumns({ ...columns });
-    console.log("Columns:", newColumns.reading1);
-    console.log("reversed last 30", label);
   };
 
   useEffect(() => {
@@ -232,7 +226,7 @@ export function AspenOverview() {
             height={220}
             // yAxisLabel="$"
             yAxisSuffix="k"
-            yAxisInterval={newColumns?.reading6.length > 0 ? calculateAxisConfig(newColumns.reading6) : 1} // optional, defaults to 1
+            yAxisInterval={1} // optional, defaults to 1
             chartConfig={{
               backgroundColor: "#e26a00",
               backgroundGradientFrom: "#fb8c00",
