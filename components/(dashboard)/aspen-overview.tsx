@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Query } from "react-native-appwrite";
 import { LineChart } from "react-native-chart-kit";
-import { Button } from "react-native-paper";
+import { Button, DataTable } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 const screenWidth = Dimensions.get("window").width;
 const frequency = ["day", "month", "year"];
@@ -36,6 +36,43 @@ export function AspenOverview() {
     reading7: [],
   };
   const [column, setColumns] = useState<Columns>({});
+  const [page, setPage] = useState<number>(0);
+  const [numberOfItemsPerPageList] = useState<number[]>([2, 3, 4]);
+  const [itemsPerPage, onItemsPerPageChange] = useState<number>(
+    numberOfItemsPerPageList[0]
+  );
+  const [dataContainer, setDataContainer] = useState([]);
+  const readingsObj: AspenData = {};
+
+  const [items] = React.useState([
+    {
+      key: 1,
+      name: "Cupcake",
+      calories: 356,
+      fat: 16,
+    },
+    {
+      key: 2,
+      name: "Eclair",
+      calories: 262,
+      fat: 16,
+    },
+    {
+      key: 3,
+      name: "Frozen yogurt",
+      calories: 159,
+      fat: 6,
+    },
+    {
+      key: 4,
+      name: "Gingerbread",
+      calories: 305,
+      fat: 3.7,
+    },
+  ]);
+
+  const from = page * itemsPerPage;
+  const to = Math.min((page + 1) * itemsPerPage, items.length);
 
   const last12Months = () => {
     const months = [];
@@ -147,11 +184,13 @@ export function AspenOverview() {
       });
     });
     setNewColumns({ ...columns });
+    console.log("New Columns", newColumns);
   };
 
   useEffect(() => {
     fetchData("day");
-  }, []);
+    setPage(0);
+  }, [itemsPerPage, user, columns]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -177,14 +216,14 @@ export function AspenOverview() {
         style={styles.content}
       >
         <View>
-          <Text>{JSON.stringify(label)}</Text>
-          <Text>{JSON.stringify(newColumns.reading5)}</Text>
+          {/* <Text>{JSON.stringify(label)}</Text>
+          <Text>{JSON.stringify(newColumns.reading5)}</Text> */}
           <LineChart
             data={{
               labels: label,
               datasets: [
                 {
-                  data: newColumns?.reading1 || [20, 45, 28, 80, 99, 43, 50],
+                  data: newColumns?.reading5 || [20, 45, 28, 80, 99, 43, 50],
                 },
                 // {
                 //   data: [20, 45, 28, 80, 99, 43, 50],
@@ -242,6 +281,35 @@ export function AspenOverview() {
               borderRadius: 16,
             }}
           />
+        </View>
+        <View>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Dessert</DataTable.Title>
+              <DataTable.Title numeric>Calories</DataTable.Title>
+              <DataTable.Title numeric>Fat</DataTable.Title>
+            </DataTable.Header>
+
+            {items.slice(from, to).map((item) => (
+              <DataTable.Row key={item.key}>
+                <DataTable.Cell>{item.name}</DataTable.Cell>
+                <DataTable.Cell numeric>{item.calories}</DataTable.Cell>
+                <DataTable.Cell numeric>{item.fat}</DataTable.Cell>
+              </DataTable.Row>
+            ))}
+
+            <DataTable.Pagination
+              page={page}
+              numberOfPages={Math.ceil(items.length / itemsPerPage)}
+              onPageChange={(page) => setPage(page)}
+              label={`${from + 1}-${to} of ${items.length}`}
+              numberOfItemsPerPageList={numberOfItemsPerPageList}
+              numberOfItemsPerPage={itemsPerPage}
+              onItemsPerPageChange={onItemsPerPageChange}
+              showFastPaginationControls
+              selectPageDropdownLabel={"Rows per page"}
+            />
+          </DataTable>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
