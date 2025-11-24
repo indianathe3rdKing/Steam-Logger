@@ -84,7 +84,7 @@ export default function aspenScreen() {
     meter_blue: { maxDelta: 100, allowSpikeAfter: 6 },
     meter_red: { maxDelta: 100, allowSpikeAfter: 6 },
     steam_flow_meter: { maxDelta: 50000, allowSpikeAfter: 6 },
-    aspen: { maxDelta: 50, allowSpikeAfter: 6 },
+    aspen: { maxDelta: 100, allowSpikeAfter: 6 },
   };
 
   const disabled: Record<string, boolean> = {
@@ -161,12 +161,12 @@ export default function aspenScreen() {
               );
               return;
             }
-            if (difference > rule.maxDelta && timeExceeded) {
-              setError(
-                `Current reading of ${key} differs from previous reading by more than ${rule.maxDelta} units. Please re-check your reading. ${timeExceeded}`
-              );
-              return;
-            } else {
+            // if (difference > rule.maxDelta) {
+            //   setError(
+            //     `Current reading of ${key} differs from previous reading by more than ${rule.maxDelta} units. Please re-check your reading. ${timeExceeded}`
+            //   );
+            //   return;}
+            else {
               count++;
             }
           }
@@ -227,7 +227,7 @@ export default function aspenScreen() {
                     ? "Date"
                     : dateTime.toLocaleDateString("default", {
                         year: "numeric",
-                        month: "2-digit",
+                        month: "short",
                         day: "2-digit",
                       })}
                 </Button>
@@ -325,7 +325,7 @@ export default function aspenScreen() {
                     text: "#304a8fff",
                   },
                 }}
-                label={"Condensate"}
+                label={"Bypass"}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"

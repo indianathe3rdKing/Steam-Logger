@@ -1,7 +1,7 @@
 import { ASPEN_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
 import { AspenData, readingsRecord } from "@/types/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   KeyboardAvoidingView,
@@ -24,7 +24,7 @@ export function AspenOverview() {
   const [visible, setVisible] = useState(true);
   const [mode, setMode] = useState<Frequency>("day");
   const [readings, setReadings] = useState<AspenData[]>();
-  const [newColumns, setNewColumns] = useState<readingsRecord>({});
+  const [newColumns, setNewColumns] = useState<Columns>({});
   const [label, setLabel] = useState<string[]>([]);
   const columns: readingsRecord = {
     reading1: [],
@@ -36,7 +36,6 @@ export function AspenOverview() {
     reading7: [],
   };
   const [column, setColumns] = useState<Columns>({});
-  const [labels, setlabels] = useState<Date[]>();
 
   const last12Months = () => {
     const months = [];
@@ -87,6 +86,16 @@ export function AspenOverview() {
     return rev;
   };
 
+  function calculateAxisConfig(data: number[]) {
+    if (!data || data.length === 0) {
+      return 1; // Default interval
+    }
+    const max = Math.max(...data);
+    const interval = Math.ceil(max / 5);
+    
+    return interval;
+  }
+
   const fetchData = async (mode: Frequency) => {
     const months = [];
     const days = [];
@@ -121,7 +130,7 @@ export function AspenOverview() {
       [
         Query.greaterThanEqual("date", startDate!.toISOString()),
         Query.lessThanEqual("date", now.toISOString()),
-        Query.equal("time", "09:38"),
+        Query.equal("time", "06:00"),
       ]
     );
 
@@ -149,17 +158,21 @@ export function AspenOverview() {
         }
       });
     });
-
-    console.log("Columns:", columns.reading1);
+    setNewColumns({ ...columns });
+    console.log("Columns:", newColumns.reading1);
     console.log("reversed last 30", label);
   };
+
+  useEffect(() => {
+    fetchData("day");
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.signOutContainer}>
         <Text></Text>
         <Button
-          onPress={() => fetchData("year")}
+          onPress={signOut}
           icon={"logout"}
           theme={{
             colors: {
@@ -178,51 +191,48 @@ export function AspenOverview() {
         style={styles.content}
       >
         <View>
-          <Text>Aspen Reading Chart</Text>
+          <Text>{JSON.stringify(label)}</Text>
+          <Text>{JSON.stringify(newColumns.reading6)}</Text>
           <LineChart
             data={{
-              labels: ["January", "February", "March", "April", "May", "June"],
+              labels: label,
               datasets: [
                 {
-                  data: [
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                  ],
+                  data: newColumns?.reading6 || [20, 45, 28, 80, 99, 43, 50],
                 },
-                {
-                  data: [20, 45, 28, 80, 99, 43, 50],
-                  color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-                  strokeWidth: 2, // optional
-                },
-                {
-                  data: [
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                  ],
-                },
-                {
-                  data: [
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                  ],
-                },
-                {
-                  data: [
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                  ],
-                },
+                // {
+                //   data: [20, 45, 28, 80, 99, 43, 50],
+                //   color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
+                //   strokeWidth: 2, // optional
+                // },
+                // {
+                //   data: [
+                //     Math.random() * 100,
+                //     Math.random() * 100,
+                //     Math.random() * 100,
+                //   ],
+                // },
+                // {
+                //   data: [
+                //     Math.random() * 100,
+                //     Math.random() * 100,
+                //     Math.random() * 100,
+                //   ],
+                // },
+                // {
+                //   data: [
+                //     Math.random() * 100,
+                //     Math.random() * 100,
+                //     Math.random() * 100,
+                //   ],
+                // },
               ],
             }}
             width={Dimensions.get("window").width} // from react-native
             height={220}
             // yAxisLabel="$"
             yAxisSuffix="k"
-            yAxisInterval={1} // optional, defaults to 1
+            yAxisInterval={newColumns?.reading6.length > 0 ? calculateAxisConfig(newColumns.reading6) : 1} // optional, defaults to 1
             chartConfig={{
               backgroundColor: "#e26a00",
               backgroundGradientFrom: "#fb8c00",
