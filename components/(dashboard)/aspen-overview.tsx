@@ -1,4 +1,4 @@
-import { ASPEN_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
+import { ASPEN_DELTA_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
 import { AspenData, readingsRecord } from "@/types/types";
 import React, { useEffect, useState } from "react";
@@ -81,16 +81,9 @@ export function AspenOverview() {
       days.push(formattedDate);
     }
     const rev = days.reverse();
-    console.log("the days", rev);
 
     return rev;
   };
-
-  function calculateAxisConfig(data: number[]) {
-    const max = Math.max(...data);
-    const interval = Math.ceil(max / 5);
-    return interval;
-  }
 
   const fetchData = async (mode: Frequency) => {
     const months = [];
@@ -122,10 +115,10 @@ export function AspenOverview() {
     }
     const dataResponse = await databases.listDocuments(
       DATABASE_ID,
-      ASPEN_TABLE_ID,
+      ASPEN_DELTA_TABLE_ID,
       [
-        Query.greaterThanEqual("date", startDate!.toISOString()),
-        Query.lessThanEqual("date", now.toISOString()),
+        // Query.greaterThanEqual("date", startDate!.toISOString()),
+        // Query.lessThanEqual("date", now.toISOString()),
         Query.equal("time", "06:00"),
       ]
     );
@@ -137,8 +130,7 @@ export function AspenOverview() {
     fetchedReadings.forEach((reading) => {
       const meterReadings = [
         reading.meter_1,
-        reading.meter_2,
-        reading.condensate,
+        reading.bypass,
         reading.meter_blue,
         reading.meter_red,
         reading.steam_flow_meter,
@@ -186,13 +178,13 @@ export function AspenOverview() {
       >
         <View>
           <Text>{JSON.stringify(label)}</Text>
-          <Text>{JSON.stringify(newColumns.reading6)}</Text>
+          <Text>{JSON.stringify(newColumns.reading5)}</Text>
           <LineChart
             data={{
               labels: label,
               datasets: [
                 {
-                  data: newColumns?.reading6 || [20, 45, 28, 80, 99, 43, 50],
+                  data: newColumns?.reading1 || [20, 45, 28, 80, 99, 43, 50],
                 },
                 // {
                 //   data: [20, 45, 28, 80, 99, 43, 50],
@@ -222,16 +214,17 @@ export function AspenOverview() {
                 // },
               ],
             }}
-            width={Dimensions.get("window").width} // from react-native
+            width={Dimensions.get("window").width}
             height={220}
-            // yAxisLabel="$"
             yAxisSuffix="k"
-            yAxisInterval={1} // optional, defaults to 1
+            yAxisInterval={5} // Show every 5th value for cleaner display
+            withVerticalLabels={true}
+            withHorizontalLabels={true}
             chartConfig={{
               backgroundColor: "#e26a00",
               backgroundGradientFrom: "#fb8c00",
               backgroundGradientTo: "#ffa726",
-              decimalPlaces: 2, // optional, defaults to 2dp
+              decimalPlaces: 0, // No decimals for cleaner look
               color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
               labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
               style: {

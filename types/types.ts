@@ -2,8 +2,8 @@ export interface AspenData {
   date?: Date;
   time?: string;
   meter_1: number;
-  meter_2?: number;
-  condensate: number;
+
+  bypass: number;
   meter_blue: number;
   meter_red: number;
   steam_flow_meter: number;

@@ -1,4 +1,10 @@
-import { ASPEN_TABLE_ID, client, DATABASE_ID, databases } from "@/lib/appwrite";
+import {
+  ASPEN_DELTA_TABLE_ID,
+  ASPEN_TABLE_ID,
+  client,
+  DATABASE_ID,
+  databases,
+} from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
 import { AspenData, MeterRule, RealtimeResponse } from "@/types/types";
 import RNDateTimePicker, {
@@ -21,8 +27,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function aspenScreen() {
   const [dateTime, setDateTime] = useState<Date>(new Date());
   const [meter1, setMeter1] = useState<number>(0);
-  const [meter2, setMeter2] = useState<number>(0);
-  const [condensate, setCondensate] = useState<number>(0);
+  // const [meter2, setMeter2] = useState<number>(0);
+  const [bypass, setBypass] = useState<number>(0);
   const [meterBlue, setMeterBlue] = useState<number>(0);
   const [meterRed, setMeterRed] = useState<number>(0);
   const [steamFlowMeter, setSteamFlowMeter] = useState<number>(0);
@@ -31,18 +37,9 @@ export default function aspenScreen() {
   const [dateText, setDateText] = useState<boolean>(true);
   const [timeText, setTimeText] = useState<boolean>(true);
   const [aspenDelta, setAspenDelta] = useState<AspenData>({
-    date: new Date(
-      dateTime.getFullYear(),
-      dateTime.getMonth(),
-      dateTime.getDate()
-    ),
-    time: dateTime.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
     meter_1: 0,
-    meter_2: 0,
-    condensate: 0,
+
+    bypass: 0,
     meter_blue: 0,
     meter_red: 0,
     steam_flow_meter: 0,
@@ -54,7 +51,7 @@ export default function aspenScreen() {
   const { user } = useAuth();
   const [editableMeter1, setEditableMeter1] = useState<boolean>(false);
   const [editableMeter2, setEditableMeter2] = useState<boolean>(false);
-  const [editableCondensate, setEditableCondensate] = useState<boolean>(false);
+  const [editableBypass, setEditableBypass] = useState<boolean>(false);
   const [editableRed, setEditableRed] = useState<boolean>(false);
   const [editableBlue, setEditableBlue] = useState<boolean>(false);
   const [editableSteamFlowMeter, setEditableSteamFlowMeter] =
@@ -86,8 +83,7 @@ export default function aspenScreen() {
       minute: "2-digit",
     }),
     meter_1: meter1,
-    meter_2: meter2,
-    condensate: condensate,
+    bypass: bypass,
     meter_blue: meterBlue,
     meter_red: meterRed,
     steam_flow_meter: steamFlowMeter,
@@ -98,8 +94,7 @@ export default function aspenScreen() {
     date: { maxDelta: 0 },
     time: { maxDelta: 0 },
     meter_1: { maxDelta: 100, allowSpikeAfter: 6 },
-    meter_2: { maxDelta: 100, allowSpikeAfter: 6 },
-    condensate: { maxDelta: 100, allowSpikeAfter: 6 },
+    bypass: { maxDelta: 100, allowSpikeAfter: 6 },
     meter_blue: { maxDelta: 100, allowSpikeAfter: 6 },
     meter_red: { maxDelta: 100, allowSpikeAfter: 6 },
     steam_flow_meter: { maxDelta: 50000, allowSpikeAfter: 6 },
@@ -108,8 +103,8 @@ export default function aspenScreen() {
 
   function clearForm() {
     setMeter1(0);
-    setMeter2(0);
-    setCondensate(0);
+
+    setBypass(0);
     setMeterBlue(0);
     setMeterRed(0);
     setSteamFlowMeter(0);
@@ -153,6 +148,18 @@ export default function aspenScreen() {
     if (!user) return;
 
     try {
+      let newDelta = {
+        ...aspenDelta,
+        date: new Date(
+          dateTime.getFullYear(),
+          dateTime.getMonth(),
+          dateTime.getDate()
+        ),
+        time: dateTime.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
       const lastResponse = await databases.listDocuments(
         DATABASE_ID,
         ASPEN_TABLE_ID,
@@ -174,7 +181,6 @@ export default function aspenScreen() {
         }
       }
       if (lastEntry) {
-        let newDelta = { ...aspenDelta };
         Object.keys(aspenReadings).forEach((key) => {
           const prevReading = lastEntry[key as keyof AspenData];
           const currentReading = aspenReadings[key as keyof AspenData];
@@ -184,9 +190,8 @@ export default function aspenScreen() {
             typeof currentReading === "number"
           ) {
             const difference = currentReading - prevReading;
-            if (typeof aspenDelta[key as keyof AspenData] === "number") {
-              (newDelta as any)[key] = difference;
-            }
+
+            (newDelta as any)[key] = difference;
 
             if (difference < 0 || currentReading < prevReading) {
               setError(
@@ -203,11 +208,13 @@ export default function aspenScreen() {
               count++;
             }
           }
-          setAspenDelta({ ...newDelta });
         });
+        setAspenDelta({ ...newDelta });
 
-        if (count === 7) {
-          console.log("The delta ", aspenDelta);
+        console.log("The delta ", newDelta);
+        console.log("count", count);
+
+        if (count === 6) {
           await databases.createDocument(
             DATABASE_ID,
             ASPEN_TABLE_ID,
@@ -216,6 +223,16 @@ export default function aspenScreen() {
               ...aspenReadings,
             }
           );
+
+          await databases.createDocument(
+            DATABASE_ID,
+            ASPEN_DELTA_TABLE_ID,
+            ID.unique(),
+            {
+              ...newDelta,
+            }
+          );
+
           clearForm();
           Alert.alert("Success", "Aspen readings submitted successfully.");
         }
@@ -335,46 +352,21 @@ export default function aspenScreen() {
                     text: "#304a8fff",
                   },
                 }}
-                label={"Meter 2"}
-                mode="outlined"
-                keyboardType="numeric"
-                style={[styles.input, { backgroundColor: "#F6F7F9" }]}
-                value={meter2.toString()}
-                right={
-                  <TextInput.Icon
-                    icon="check"
-                    onPress={() => {
-                      setEditableMeter2((prev) => !prev);
-                    }}
-                  />
-                }
-                onChangeText={(text) => setMeter2(Number(text) || 0)}
-                disabled={editableMeter2}
-              />
-
-              <TextInput
-                theme={{
-                  colors: {
-                    primary: "#304a8fff",
-                    outline: "#C7CAD0",
-                    text: "#304a8fff",
-                  },
-                }}
                 label={"Bypass"}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: "#F6F7F9" }]}
                 keyboardType="numeric"
-                value={condensate.toString()}
+                value={bypass.toString()}
                 right={
                   <TextInput.Icon
                     icon="check"
                     onPress={() => {
-                      setEditableCondensate((prev) => !prev);
+                      setEditableBypass((prev) => !prev);
                     }}
                   />
                 }
-                onChangeText={(text) => setCondensate(Number(text))}
-                disabled={editableCondensate}
+                onChangeText={(text) => setBypass(Number(text))}
+                disabled={editableBypass}
               />
 
               <TextInput
