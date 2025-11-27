@@ -34,3 +34,7 @@ export interface RealtimeResponse {
   events: string[];
   payload: any;
 }
+
+export interface altColumns {
+  [key: string]: Date[] | string[] | number[];
+}

@@ -1,6 +1,12 @@
-import { ASPEN_DELTA_TABLE_ID, DATABASE_ID, databases } from "@/lib/appwrite";
+import {
+  ASPEN_DELTA_TABLE_ID,
+  ASPEN_TABLE_ID,
+  DATABASE_ID,
+  databases,
+  tableDB,
+} from "@/lib/appwrite";
 import { useAuth } from "@/lib/auth-context";
-import { AspenData, readingsRecord } from "@/types/types";
+import { altColumns, AspenData, readingsRecord } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import {
   Dimensions,
@@ -23,9 +29,13 @@ export function AspenOverview() {
   const { signOut, user } = useAuth();
   const [visible, setVisible] = useState(true);
   const [mode, setMode] = useState<Frequency>("day");
-  const [readings, setReadings] = useState<AspenData[]>();
+  const [allColumns, setAllColumns] = useState<altColumns>({});
   const [newColumns, setNewColumns] = useState<Columns>({});
   const [label, setLabel] = useState<string[]>([]);
+  const altColumns: altColumns = {
+    date: [],
+    time: [],
+  };
   const columns: readingsRecord = {
     reading1: [],
     reading2: [],
@@ -33,7 +43,6 @@ export function AspenOverview() {
     reading4: [],
     reading5: [],
     reading6: [],
-    reading7: [],
   };
   const [column, setColumns] = useState<Columns>({});
   const [page, setPage] = useState<number>(0);
@@ -172,6 +181,8 @@ export function AspenOverview() {
         reading.meter_red,
         reading.steam_flow_meter,
         reading.aspen,
+        reading.date,
+        reading.time,
       ];
       meterReadings.forEach((value, index) => {
         if (typeof value === "number") {
@@ -180,16 +191,64 @@ export function AspenOverview() {
             columns[columnKey] = [];
           }
           columns[columnKey].push(value);
+        } else if (typeof value !== "number") {
+          // Simply skip non-number values for now to avoid errors
+          // console.log("Skipping non-number value:", value, "at ndex", index);
+          if (index === 6) {
+            const Key = "date" as keyof altColumns;
+            if (!altColumns[Key]) {
+              altColumns[Key] = [];
+            }
+            (altColumns as any)[Key].push(value);
+          }
+          if (index === 7) {
+            const Key = "time" as keyof altColumns;
+            if (!altColumns[Key]) {
+              altColumns[Key] = [];
+            }
+            (altColumns as any)[Key].push(value);
+          }
         }
       });
     });
     setNewColumns({ ...columns });
-    console.log("New Columns", newColumns);
+    // console.log("New Columns (numbers only):", allColumns);
   };
 
+  function getReading(readingNumber: number) {
+    const readingKey = `reading${readingNumber}`;
+
+    return newColumns[readingKey];
+  }
+
+  async function createChartData() {
+    const result = await tableDB.listRows({
+      databaseId: DATABASE_ID,
+      tableId: ASPEN_TABLE_ID,
+      queries: [
+        Query.limit(2),
+        Query.select([
+          "date",
+          "time",
+          "meter_1",
+          "bypass",
+          "meter_blue",
+          "meter_red",
+          "steam_flow_meter",
+          "aspen",
+        ]),
+      ],
+    });
+
+    const row = result.rows;
+    return row;
+  }
+
   useEffect(() => {
+    setAllColumns({ ...altColumns, ...columns });
     fetchData("day");
     setPage(0);
+    createChartData();
   }, [itemsPerPage, user, columns]);
 
   return (

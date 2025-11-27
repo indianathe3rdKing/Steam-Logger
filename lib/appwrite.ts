@@ -1,4 +1,4 @@
-import { Account, Client, Databases } from "react-native-appwrite";
+import { Account, Client, Databases, TablesDB } from "react-native-appwrite";
 
 export const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!)
@@ -7,6 +7,7 @@ export const client = new Client()
 
 export const account = new Account(client);
 export const databases = new Databases(client);
+export const tableDB = new TablesDB(client);
 
 export const DATABASE_ID = process.env.EXPO_PUBLIC_DB_ID!;
 export const ASPEN_TABLE_ID = process.env.EXPO_PUBLIC_DB_ASPEN_TABLE_ID!;
