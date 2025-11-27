@@ -12,6 +12,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -50,38 +51,20 @@ export function AspenOverview() {
   const [itemsPerPage, onItemsPerPageChange] = useState<number>(
     numberOfItemsPerPageList[0]
   );
-  const [dataContainer, setDataContainer] = useState([]);
-  const readingsObj: AspenData = {};
+  const [tableData, setTableData] = useState<AspenData[]>([]);
 
-  const [items] = React.useState([
-    {
-      key: 1,
-      name: "Cupcake",
-      calories: 356,
-      fat: 16,
-    },
-    {
-      key: 2,
-      name: "Eclair",
-      calories: 262,
-      fat: 16,
-    },
-    {
-      key: 3,
-      name: "Frozen yogurt",
-      calories: 159,
-      fat: 6,
-    },
-    {
-      key: 4,
-      name: "Gingerbread",
-      calories: 305,
-      fat: 3.7,
-    },
-  ]);
+  const items = tableData;
 
   const from = page * itemsPerPage;
   const to = Math.min((page + 1) * itemsPerPage, items.length);
+
+  const formatDate = (date: Date) => {
+    const formattedDate = date.toLocaleDateString("en-Us", {
+      month: "short",
+      day: "numeric",
+    });
+    return formattedDate;
+  };
 
   const last12Months = () => {
     const months = [];
@@ -104,10 +87,7 @@ export function AspenOverview() {
     for (let i = 0; i < 30; i++) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const formattedDate = date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
+      const formattedDate = formatDate(date);
       days.push(formattedDate);
     }
     const reversedDays = days.reverse();
@@ -221,12 +201,12 @@ export function AspenOverview() {
     return newColumns[readingKey];
   }
 
-  async function createChartData() {
+  async function fetchTableData() {
     const result = await tableDB.listRows({
       databaseId: DATABASE_ID,
       tableId: ASPEN_TABLE_ID,
       queries: [
-        Query.limit(2),
+        Query.limit(26),
         Query.select([
           "date",
           "time",
@@ -241,14 +221,25 @@ export function AspenOverview() {
     });
 
     const row = result.rows;
-    return row;
+    const parsedData = row.map((item: any) => ({
+      date: item.date,
+      time: item.time,
+      meter_1: item.meter_1,
+      bypass: item.bypass,
+      meter_blue: item.meter_blue,
+      meter_red: item.meter_red,
+      steam_flow_meter: item.steam_flow_meter,
+      aspen: item.aspen,
+    }));
+    setTableData(parsedData);
+    return parsedData;
   }
 
   useEffect(() => {
     setAllColumns({ ...altColumns, ...columns });
     fetchData("day");
     setPage(0);
-    createChartData();
+    fetchTableData();
   }, [itemsPerPage, user, columns]);
 
   return (
@@ -269,107 +260,122 @@ export function AspenOverview() {
           Sign Out
         </Button>
       </View>
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.content}
       >
-        <View>
-          {/* <Text>{JSON.stringify(label)}</Text>
+        <ScrollView>
+          <View>
+            {/* <Text>{JSON.stringify(label)}</Text>
           <Text>{JSON.stringify(newColumns.reading5)}</Text> */}
-          <LineChart
-            data={{
-              labels: label,
-              datasets: [
-                {
-                  data: newColumns?.reading5 || [20, 45, 28, 80, 99, 43, 50],
+            <LineChart
+              data={{
+                labels: label,
+                datasets: [
+                  {
+                    data: newColumns?.reading5 || [20, 45, 28, 80, 99, 43, 50],
+                  },
+                  // {
+                  //   data: [20, 45, 28, 80, 99, 43, 50],
+                  //   color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
+                  //   strokeWidth: 2, // optional
+                  // },
+                  // {
+                  //   data: [
+                  //     Math.random() * 100,
+                  //     Math.random() * 100,
+                  //     Math.random() * 100,
+                  //   ],
+                  // },
+                  // {
+                  //   data: [
+                  //     Math.random() * 100,
+                  //     Math.random() * 100,
+                  //     Math.random() * 100,
+                  //   ],
+                  // },
+                  // {
+                  //   data: [
+                  //     Math.random() * 100,
+                  //     Math.random() * 100,
+                  //     Math.random() * 100,
+                  //   ],
+                  // },
+                ],
+              }}
+              width={Dimensions.get("window").width}
+              height={220}
+              yAxisSuffix="k"
+              yAxisInterval={5} // Show every 5th value for cleaner display
+              withVerticalLabels={true}
+              withHorizontalLabels={true}
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 0, // No decimals for cleaner look
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
                 },
-                // {
-                //   data: [20, 45, 28, 80, 99, 43, 50],
-                //   color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-                //   strokeWidth: 2, // optional
-                // },
-                // {
-                //   data: [
-                //     Math.random() * 100,
-                //     Math.random() * 100,
-                //     Math.random() * 100,
-                //   ],
-                // },
-                // {
-                //   data: [
-                //     Math.random() * 100,
-                //     Math.random() * 100,
-                //     Math.random() * 100,
-                //   ],
-                // },
-                // {
-                //   data: [
-                //     Math.random() * 100,
-                //     Math.random() * 100,
-                //     Math.random() * 100,
-                //   ],
-                // },
-              ],
-            }}
-            width={Dimensions.get("window").width}
-            height={220}
-            yAxisSuffix="k"
-            yAxisInterval={5} // Show every 5th value for cleaner display
-            withVerticalLabels={true}
-            withHorizontalLabels={true}
-            chartConfig={{
-              backgroundColor: "#e26a00",
-              backgroundGradientFrom: "#fb8c00",
-              backgroundGradientTo: "#ffa726",
-              decimalPlaces: 0, // No decimals for cleaner look
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
+                propsForDots: {
+                  r: "6",
+                  strokeWidth: "2",
+                  stroke: "#ffa726",
+                },
+              }}
+              bezier
+              style={{
+                marginVertical: 8,
                 borderRadius: 16,
-              },
-              propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726",
-              },
-            }}
-            bezier
-            style={{
-              marginVertical: 8,
-              borderRadius: 16,
-            }}
-          />
-        </View>
-        <View>
-          <DataTable>
-            <DataTable.Header>
-              <DataTable.Title>Dessert</DataTable.Title>
-              <DataTable.Title numeric>Calories</DataTable.Title>
-              <DataTable.Title numeric>Fat</DataTable.Title>
-            </DataTable.Header>
-
-            {items.slice(from, to).map((item) => (
-              <DataTable.Row key={item.key}>
-                <DataTable.Cell>{item.name}</DataTable.Cell>
-                <DataTable.Cell numeric>{item.calories}</DataTable.Cell>
-                <DataTable.Cell numeric>{item.fat}</DataTable.Cell>
-              </DataTable.Row>
-            ))}
-
-            <DataTable.Pagination
-              page={page}
-              numberOfPages={Math.ceil(items.length / itemsPerPage)}
-              onPageChange={(page) => setPage(page)}
-              label={`${from + 1}-${to} of ${items.length}`}
-              numberOfItemsPerPageList={numberOfItemsPerPageList}
-              numberOfItemsPerPage={itemsPerPage}
-              onItemsPerPageChange={onItemsPerPageChange}
-              showFastPaginationControls
-              selectPageDropdownLabel={"Rows per page"}
+              }}
             />
-          </DataTable>
-        </View>
+          </View>
+          <View>
+            <DataTable>
+              <DataTable.Header>
+                <DataTable.Title>Date</DataTable.Title>
+                <DataTable.Title numeric>Time</DataTable.Title>
+                <DataTable.Title numeric>Meter 1</DataTable.Title>
+                <DataTable.Title numeric>Bypass</DataTable.Title>
+                <DataTable.Title numeric>Blue</DataTable.Title>
+                <DataTable.Title numeric>Red</DataTable.Title>
+                <DataTable.Title numeric>Steam</DataTable.Title>
+                <DataTable.Title numeric>Aspen</DataTable.Title>
+              </DataTable.Header>
+
+              {items.slice(from, to).map((item, index) => (
+                <DataTable.Row key={index}>
+                  <DataTable.Cell>
+                    {formatDate(new Date(item.date || ""))}
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric>{item.time}</DataTable.Cell>
+                  <DataTable.Cell numeric>{item.meter_1}</DataTable.Cell>
+                  <DataTable.Cell numeric>{item.bypass}</DataTable.Cell>
+                  <DataTable.Cell numeric>{item.meter_blue}</DataTable.Cell>
+                  <DataTable.Cell numeric>{item.meter_red}</DataTable.Cell>
+                  <DataTable.Cell numeric>
+                    {item.steam_flow_meter}
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric>{item.aspen}</DataTable.Cell>
+                </DataTable.Row>
+              ))}
+
+              <DataTable.Pagination
+                page={page}
+                numberOfPages={Math.ceil(items.length / itemsPerPage)}
+                onPageChange={(page) => setPage(page)}
+                label={`${from + 1}-${to} of ${items.length}`}
+                numberOfItemsPerPageList={numberOfItemsPerPageList}
+                numberOfItemsPerPage={itemsPerPage}
+                onItemsPerPageChange={onItemsPerPageChange}
+                showFastPaginationControls
+                selectPageDropdownLabel={"Rows per page"}
+              />
+            </DataTable>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -381,6 +387,6 @@ const styles = StyleSheet.create({
   signOutContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 16,
+    paddingHorizontal: 8,
   },
 });
