@@ -12,15 +12,15 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import { Query } from "react-native-appwrite";
 import { LineChart } from "react-native-chart-kit";
+import { ScrollView } from "react-native-gesture-handler";
 import { Button, DataTable } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 const screenWidth = Dimensions.get("window").width;
 const frequency = ["day", "month", "year"];
 type Frequency = (typeof frequency)[number];
@@ -243,7 +243,7 @@ export function AspenOverview() {
   }, [itemsPerPage, user, columns]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.signOutContainer}>
         <Text></Text>
         <Button
@@ -377,13 +377,13 @@ export function AspenOverview() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: {},
+  content: { flex: 1, paddingBottom: 16 },
   signOutContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

@@ -1,6 +1,7 @@
 import AuthProvider, { useAuth } from "@/lib/auth-context";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -25,10 +26,12 @@ export default function RootLayout() {
     <AuthProvider>
       <SafeAreaProvider>
         <AuthGuard>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="auth" options={{ headerShown: false }} />
-          </Stack>
+          <GestureHandlerRootView>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="auth" options={{ headerShown: false }} />
+            </Stack>
+          </GestureHandlerRootView>
         </AuthGuard>
       </SafeAreaProvider>
     </AuthProvider>
