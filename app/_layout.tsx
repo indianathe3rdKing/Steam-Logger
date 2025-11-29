@@ -1,6 +1,9 @@
 import AuthProvider, { useAuth } from "@/lib/auth-context";
+import { useWebFonts } from "@/hooks/useWebFonts";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -31,9 +34,12 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  useWebFonts(); // Add web font loading
   const [fontsLoaded] = useFonts({
     ...FontAwesome.font,
     ...MaterialCommunityIcons.font,
+    ...Ionicons.font,
+    ...MaterialIcons.font,
   });
 
   useEffect(() => {

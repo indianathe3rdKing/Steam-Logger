@@ -20,7 +20,7 @@ export default function TabsLayout() {
           headerShown: false,
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="home" size={24} color={color} />
+            <FontAwesome name="house" size={24} color={color} />
           ),
         }}
       />
@@ -30,7 +30,7 @@ export default function TabsLayout() {
           headerShown: false,
           title: "Aspen",
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="medkit" size={24} color={color} />
+            <FontAwesome name="user-md" size={24} color={color} />
           ),
         }}
       />
