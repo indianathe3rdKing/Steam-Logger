@@ -1,8 +1,13 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
+import { useEffect } from "react";
 
 export default function TabsLayout() {
+  useEffect(() => {
+    FontAwesome.loadFont();
+    MaterialCommunityIcons.loadFont();
+  }, []);
   return (
     <Tabs
       screenOptions={{
