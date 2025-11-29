@@ -14,6 +14,7 @@ import {
   Platform,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { Query } from "react-native-appwrite";
@@ -28,7 +29,8 @@ type Columns = Record<string, number[]>;
 
 export function AspenOverview() {
   const { signOut, user } = useAuth();
-  const [visible, setVisible] = useState(true);
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 768;
   const [mode, setMode] = useState<Frequency>("day");
   const [allColumns, setAllColumns] = useState<altColumns>({});
   const [newColumns, setNewColumns] = useState<Columns>({});
@@ -143,7 +145,7 @@ export function AspenOverview() {
       DATABASE_ID,
       ASPEN_DELTA_TABLE_ID,
       [
-        // Query.greaterThanEqual("date", startDate!.toISOString()),
+        Query.greaterThanEqual("date", startDate!.toISOString()),
         // Query.lessThanEqual("date", now.toISOString()),
         Query.equal("time", "06:00"),
       ]
@@ -217,6 +219,7 @@ export function AspenOverview() {
           "steam_flow_meter",
           "aspen",
         ]),
+        // Query.orderDesc("date"),
       ],
     });
 
@@ -236,14 +239,27 @@ export function AspenOverview() {
   }
 
   useEffect(() => {
-    setAllColumns({ ...altColumns, ...columns });
-    fetchData("day");
-    setPage(0);
-    fetchTableData();
-  }, [itemsPerPage, user, columns]);
+    // Only run if user is authenticated
+    if (!user) return;
+
+    const loadData = () => {
+      try {
+        fetchData("day");
+        setPage(0);
+        setAllColumns({ ...altColumns, ...columns });
+        fetchTableData();
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+
+    loadData();
+  }, [itemsPerPage, user]);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, isDesktop ? styles.desktopContainer : null]}
+    >
       <View style={styles.signOutContainer}>
         <Text></Text>
         <Button
@@ -262,15 +278,15 @@ export function AspenOverview() {
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.content}
+        style={[styles.content, isDesktop && styles.desktopContent]}
       >
         <ScrollView>
           <View>
             {/* <Text>{JSON.stringify(label)}</Text>
-          <Text>{JSON.stringify(newColumns.reading5)}</Text> */}
+            <Text>{JSON.stringify(newColumns.reading5)}</Text> */}
             <LineChart
               data={{
-                labels: label,
+                labels: label.slice(0, newColumns.reading5?.length),
                 datasets: [
                   {
                     data: newColumns?.reading5 || [20, 45, 28, 80, 99, 43, 50],
@@ -305,7 +321,7 @@ export function AspenOverview() {
               }}
               width={Dimensions.get("window").width}
               height={220}
-              yAxisSuffix="k"
+              // yAxisSuffix="k"
               yAxisInterval={5} // Show every 5th value for cleaner display
               withVerticalLabels={true}
               withHorizontalLabels={true}
@@ -328,7 +344,7 @@ export function AspenOverview() {
               bezier
               style={{
                 marginVertical: 8,
-                borderRadius: 16,
+                borderRadius: isDesktop ? 0 : 16,
               }}
             />
           </View>
@@ -383,7 +399,16 @@ export function AspenOverview() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  desktopContainer: {
+    flex: 1,
+    // marginHorizontal: 100,
+  },
   content: { flex: 1, paddingBottom: 16 },
+  desktopContent: {
+    flex: 1,
+    paddingBottom: 16,
+    marginHorizontal: 100,
+  },
   signOutContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

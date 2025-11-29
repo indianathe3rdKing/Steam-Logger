@@ -1,4 +1,6 @@
 import { useAuth } from "@/lib/auth-context";
+import { Raleway_700Bold } from "@expo-google-fonts/raleway";
+import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
@@ -13,6 +15,9 @@ export default function AuthScreen() {
   const { signIn, signUp } = useAuth();
   const router = useRouter();
   const theme = useTheme();
+  let [fontsLoaded] = useFonts({
+    "Raleway-Bold": Raleway_700Bold,
+  });
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -57,6 +62,13 @@ export default function AuthScreen() {
           {isSignUp ? "Create an Account" : "Welcome Back!"}
         </Text>
         <TextInput
+          theme={{
+            colors: {
+              primary: "#304a8fff",
+              outline: "#C7CAD0",
+              text: "#304a8fff",
+            },
+          }}
           label="Email"
           autoCapitalize="none"
           keyboardType="email-address"
@@ -65,6 +77,13 @@ export default function AuthScreen() {
           mode="outlined"
         />
         <TextInput
+          theme={{
+            colors: {
+              primary: "#304a8fff",
+              outline: "#C7CAD0",
+              text: "#304a8fff",
+            },
+          }}
           label="Password"
           //   secureTextEntry
           onChangeText={setPassword}
@@ -76,10 +95,30 @@ export default function AuthScreen() {
             {error}
           </Text>
         )}
-        <Button mode="contained" style={styles.button} onPress={handleAuth}>
+        <Button
+          theme={{
+            colors: {
+              primary: "#26355D",
+              outline: "#C7CAD0",
+              text: "#fff",
+            },
+          }}
+          mode="contained"
+          style={styles.submitButton}
+          onPress={handleAuth}
+        >
           {isSignUp ? "Sign Up" : "Sign In"}
         </Button>
-        <Button onPress={handleToggle}>
+        <Button
+          theme={{
+            colors: {
+              primary: "#304a8fff",
+              outline: "#C7CAD0",
+              text: "#304a8fff",
+            },
+          }}
+          onPress={handleToggle}
+        >
           {isSignUp
             ? "Already have an account?"
             : "Don't have an account? Sign Up"}
@@ -102,8 +141,10 @@ const styles = StyleSheet.create({
     // fontSize: 24,
     // fontWeight: "bold",
     marginBottom: 16,
-    color: "#1e0033ff",
+    color: "#26355D",
     textAlign: "center",
+    fontFamily: "Sans-serif",
+    fontWeight: "500",
   },
   text: {
     marginHorizontal: 12,
@@ -115,5 +156,10 @@ const styles = StyleSheet.create({
   errors: {
     paddingLeft: 24,
     marginTop: 8,
+  },
+  submitButton: {
+    marginTop: 12,
+    height: 50,
+    justifyContent: "center",
   },
 });

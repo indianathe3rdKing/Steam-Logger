@@ -199,7 +199,7 @@ export default function aspenScreen() {
               );
               return;
             }
-            if (difference > rule.maxDelta) {
+            if (difference > rule.maxDelta && timeExceeded) {
               setError(
                 `Current reading of ${key} differs from previous reading by more than ${rule.maxDelta} units. Please re-check your reading. ${timeExceeded}`
               );
