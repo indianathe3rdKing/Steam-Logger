@@ -11,6 +11,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { ID, Query } from "react-native-appwrite";
@@ -19,6 +20,8 @@ import { useSharedValue } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function freseniusScreen() {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 668;
   const [dateTime, setDateTime] = useState<Date>(new Date());
   const [meterfk, setMeterfk] = useState<number>(0);
   const [metersh, setMetersh] = useState<number>(0);
@@ -188,7 +191,7 @@ export default function freseniusScreen() {
             contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.content}>
+            <View style={[styles.content, isDesktop && styles.desktopWidth]}>
               <View style={styles.timeContainer}>
                 <Button
                   theme={{
@@ -451,7 +454,10 @@ const styles = StyleSheet.create({
   submitButton: {
     marginTop: 12,
     height: 50,
-
     justifyContent: "center",
+  },
+  desktopWidth: {
+    minWidth: 400,
+    marginHorizontal: "auto",
   },
 });

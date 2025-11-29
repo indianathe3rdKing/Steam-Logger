@@ -3,7 +3,13 @@ import { Raleway_700Bold } from "@expo-google-fonts/raleway";
 import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 export default function AuthScreen() {
@@ -18,6 +24,8 @@ export default function AuthScreen() {
   let [fontsLoaded] = useFonts({
     "Raleway-Bold": Raleway_700Bold,
   });
+  let { width } = useWindowDimensions();
+  const isDesktop = width >= 668;
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -57,7 +65,7 @@ export default function AuthScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={styles.content}>
+      <View style={[styles.content, isDesktop && styles.desktopWidth]}>
         <Text style={styles.title} variant="headlineMedium">
           {isSignUp ? "Create an Account" : "Welcome Back!"}
         </Text>
@@ -161,5 +169,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
     height: 50,
     justifyContent: "center",
+  },
+  desktopWidth: {
+    minWidth: 400,
+    marginHorizontal: "auto",
   },
 });

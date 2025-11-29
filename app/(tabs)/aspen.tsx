@@ -17,6 +17,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { ID, Query } from "react-native-appwrite";
@@ -25,6 +26,8 @@ import { useSharedValue } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function aspenScreen() {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 668;
   const [dateTime, setDateTime] = useState<Date>(new Date());
   const [meter1, setMeter1] = useState<number>(0);
   // const [meter2, setMeter2] = useState<number>(0);
@@ -262,7 +265,7 @@ export default function aspenScreen() {
             contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.content}>
+            <View style={[styles.content, isDesktop && styles.desktopWidth]}>
               <View style={styles.timeContainer}>
                 <Button
                   theme={{
@@ -537,5 +540,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
     height: 50,
     justifyContent: "center",
+  },
+  desktopWidth: {
+    minWidth: 400,
+    marginHorizontal: "auto",
   },
 });

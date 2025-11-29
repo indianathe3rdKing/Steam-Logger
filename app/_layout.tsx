@@ -13,11 +13,10 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     if (isLoading) return; // Don't do anything while loading
 
     const inAuthRoute = segments[0] === "auth";
-    const inTabsRoute = segments[0] === "(tabs)";
 
-    if (!user && !inAuthRoute && inTabsRoute) {
+    if (!user && !inAuthRoute) {
       router.replace("/auth");
-    } else if (user && inAuthRoute && !inTabsRoute) {
+    } else if (user && inAuthRoute) {
       router.replace("/(tabs)/home");
     }
   }, [user, segments, isLoading]);
@@ -32,6 +31,7 @@ export default function RootLayout() {
         <AuthGuard>
           <GestureHandlerRootView>
             <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="auth" options={{ headerShown: false }} />
             </Stack>
