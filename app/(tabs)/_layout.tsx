@@ -20,7 +20,7 @@ export default function TabsLayout() {
           headerShown: false,
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="house" size={24} color={color} />
+            <FontAwesome name="home" size={24} color={color} />
           ),
         }}
       />
