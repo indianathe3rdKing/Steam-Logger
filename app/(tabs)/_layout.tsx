@@ -30,7 +30,7 @@ export default function TabsLayout() {
           headerShown: false,
           title: "Aspen",
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="user-md" size={24} color={color} />
+            <FontAwesome name="medkit" size={24} color={color} />
           ),
         }}
       />
