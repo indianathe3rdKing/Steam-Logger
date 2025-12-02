@@ -52,7 +52,6 @@ export default function AuthProvider({
   };
   const signIn = async (email: string, password: string) => {
     try {
-      await account.deleteSessions();
       await account.createEmailPasswordSession(email, password);
       const session = await account.get();
       setUser(session);
