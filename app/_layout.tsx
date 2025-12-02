@@ -1,4 +1,3 @@
-import { useWebFonts } from "@/hooks/useWebFonts";
 import AuthProvider, { useAuth } from "@/lib/auth-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -34,7 +33,6 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
-  useWebFonts(); // Add web font loading
   const [fontsLoaded] = useFonts({
     ...FontAwesome.font,
     ...MaterialCommunityIcons.font,
