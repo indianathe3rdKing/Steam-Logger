@@ -219,6 +219,7 @@ export function FreseniusOverview() {
           "steam_flow_meter_1",
           "steam_flow_meter_2",
         ]),
+        Query.orderDesc("date"),
       ],
     });
 

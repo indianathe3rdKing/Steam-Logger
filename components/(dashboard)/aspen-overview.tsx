@@ -47,7 +47,7 @@ export function AspenOverview() {
     reading5: [],
     reading6: [],
   };
-  const [column, setColumns] = useState<Columns>({});
+  // const [column, setColumns] = useState<Columns>({});
   const [page, setPage] = useState<number>(0);
   const [numberOfItemsPerPageList] = useState<number[]>([2, 3, 4]);
   const [itemsPerPage, onItemsPerPageChange] = useState<number>(
@@ -219,7 +219,7 @@ export function AspenOverview() {
           "steam_flow_meter",
           "aspen",
         ]),
-        // Query.orderDesc("date"),
+        Query.orderDesc("date"),
       ],
     });
 
