@@ -33,6 +33,3 @@ def normalize_rows(rows):
         ])
 
     return normalized
-
-
-print(normalize_rows(rows))

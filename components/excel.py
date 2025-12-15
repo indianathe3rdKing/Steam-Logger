@@ -1,6 +1,6 @@
 from openpyxl import Workbook, load_workbook
 import os
-
+from data_fetch import rows, normalize_rows
 FileName = "steam_data.xlsx"
 
 HEADERS = [
@@ -18,3 +18,15 @@ def get_workbook():
         ws.append(HEADERS)
 
     return wb, ws
+
+
+def append_rows(rows):
+    wb, ws = get_workbook()
+
+    for row in rows:
+        ws.append(row)
+        print(f"Appended row: {row}")
+    wb.save(FileName)
+
+
+append_rows(normalize_rows(rows))
