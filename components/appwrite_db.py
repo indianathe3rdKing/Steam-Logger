@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from appwrite.client import Client
 from appwrite.services.tables_db import TablesDB
 from appwrite.id import ID
-from appwrite.query import Query
+
 load_dotenv()
 # Initialize Appwrite client
 client = Client()
@@ -21,16 +21,3 @@ todoTable = os.getenv("EXPO_PUBLIC_DB_ASPEN_TABLE_ID")
 def perpare_database():
     global todoDatabase
     global todoTable
-
-
-def fetch_new_data():
-
-    response = tablesDB.list_rows(
-        database_id=todoDatabase,
-        table_id=todoTable,
-        queries=[Query.equal("time", "06:00")]
-    )
-    print(response)
-
-
-fetch_new_data()
