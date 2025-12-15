@@ -1,6 +1,7 @@
 
 from appwrite.query import Query
 from appwrite_db import tablesDB, todoDatabase, todoTable
+from datetime import datetime, date
 
 
 def fetch_new_data():
@@ -20,8 +21,16 @@ def normalize_rows(rows):
     normalized = []
 
     for item in rows:
+        raw_date = item.get("date")
+        if isinstance(raw_date, (datetime, date)):
+            formatted_date = raw_date.strftime("%x")
+        elif isinstance(raw_date, str):
+            formatted_date = datetime.fromisoformat(
+                raw_date.replace("Z", "")).strftime("%x")
+        else:
+            formatted_date = ""
         normalized.append([
-            item.get("date"),
+            formatted_date,
             item.get("time"),
             item.get("meter_1"),
             item.get("bypass"),
@@ -31,5 +40,4 @@ def normalize_rows(rows):
             item.get("aspen"),
 
         ])
-
     return normalized
