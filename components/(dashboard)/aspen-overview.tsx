@@ -10,8 +10,6 @@ import { altColumns, AspenData, readingsRecord } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import {
   Dimensions,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -276,8 +274,8 @@ export function AspenOverview() {
           Sign Out
         </Button>
       </View>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <View
+        // behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={[styles.content, isDesktop && styles.desktopContent]}
       >
         <ScrollView>
@@ -392,7 +390,7 @@ export function AspenOverview() {
             </DataTable>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
     </View>
   );
 }
