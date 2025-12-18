@@ -1,4 +1,4 @@
-# Import necessary libraries for database queries and date handling
+
 from appwrite.query import Query
 from appwrite_db import tablesDB, todoDatabase, todoTable
 from datetime import datetime, date
@@ -15,8 +15,12 @@ def fetch_new_data():
     return response["rows"]
 
 
-# Load data on module import
-rows = fetch_new_data()
+# Load data on module import with error handling
+try:
+    rows = fetch_new_data()
+except Exception as e:
+    print(f"Warning: Failed to fetch data on import: {e}")
+    rows = []
 
 
 # Converts raw database rows into formatted list structure for Excel
@@ -46,3 +50,7 @@ def normalize_rows(rows):
 
         ])
     return normalized
+
+
+if __name__ == "__main__":
+    print("Data fetch module loaded. Rows fetched:", len(rows))

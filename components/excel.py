@@ -1,13 +1,15 @@
 # Import necessary libraries for date/time and Excel operations
 import datetime
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+from openpyxl.styles import Font, Alignment, PatternFill
 import os
 from data_fetch import rows, normalize_rows
-
+from flask import Flask, send_file
+import io
 # Name of the Excel file to save data to
 FileName = "steam_data.xlsx"
 
+app = Flask(__name__)
 
 # Column headers for the Excel spreadsheet
 HEADERS = [
@@ -62,7 +64,7 @@ def append_rows(rows):
     # Iterate through each row and add it to the worksheet
     for row in rows:
         ws.append(row)
-        print(f"Appended row: {row}")
+        # print(f"Appended row: {row}")
         # style the cells
         for cell in ws[ws.max_row]:
             cell.alignment = Alignment(horizontal="center")
@@ -88,8 +90,26 @@ def append_rows(rows):
         cell.fill = PatternFill("solid", start_color="FFA239")
         cell.font = Font(bold=True)
     # Save the updated workbook to disk
-    wb.save(FileName)
+        virtual_workbook = io.BytesIO()
+        wb.save(virtual_workbook)
+        virtual_workbook.seek(0)
+
+    return virtual_workbook
 
 
 # Execute: Normalize the fetched data and write to Excel file
-append_rows(normalize_rows(rows))
+try:
+    File = append_rows(normalize_rows(rows))
+    print(f"Excel file '{FileName}' created/updated successfully.")
+except Exception as e:
+    print(f"Warning: Error creating Excel file: {e}")
+    File = "steam_data.xlsx"
+
+
+@app.route("/download", methods=['GET'])
+def download_file():
+    return send_file(File, as_attachment=True, download_name=File, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

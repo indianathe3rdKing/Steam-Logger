@@ -17,6 +17,8 @@ tablesDB = TablesDB(client)
 todoDatabase = os.getenv("EXPO_PUBLIC_DB_ID")
 todoTable = os.getenv("EXPO_PUBLIC_DB_ASPEN_TABLE_ID")
 
+print("Database ID ", todoDatabase)
+
 
 def perpare_database():
     global todoDatabase

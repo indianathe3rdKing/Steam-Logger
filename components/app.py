@@ -1,17 +1,16 @@
 
 import datetime
 import calendar
-from appwrite import table_db
 
 
 def run_monthly_invoice_job():
     # Where the logic for fetching monthly steam logs and water usage is taking place
     print("Running monthly invoice job...")
-    
 
 
 def execute_scheduled_job():
     today = datetime.date.today()
+    print(f"Checking date: {today}")
 #   Check if today is the 15th of the month
     if today.day == 15:
         print("It's the 15th,run.")

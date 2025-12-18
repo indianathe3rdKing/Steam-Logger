@@ -1,4 +1,5 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
 
@@ -41,6 +42,16 @@ export default function TabsLayout() {
           title: "Fresenius",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="factory" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="export"
+        options={{
+          headerShown: false,
+          title: "Export",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome6 name="file-export" size={23} color={color} />
           ),
         }}
       />
