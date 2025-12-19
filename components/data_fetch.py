@@ -26,7 +26,6 @@ except Exception as e:
 # Converts raw database rows into formatted list structure for Excel
 def normalize_rows(rows):
     normalized = []
-
     for item in rows:
         raw_date = item.get("date")
         # Handle different date formats (datetime object or ISO string)
