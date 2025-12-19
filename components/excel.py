@@ -120,5 +120,12 @@ def update_excel_file():
             file_id=file_Id,
             file=InputFile.from_bytes(File.read(), FileName)
         )
+        print("Excel file updated successfully!")
     except Exception as e:
-        print(f"Warning: Error creating Excel file: {e}")
+        print(f"Error updating Excel file: {e}")
+
+
+if __name__ == "__main__":
+    print("Starting Excel update...")
+    update_excel_file()
+    print("Excel update script completed.")

@@ -21,5 +21,9 @@ storage = Storage(client)
 
 todoDatabase = os.getenv("EXPO_PUBLIC_DB_ID")
 todoTable = os.getenv("EXPO_PUBLIC_DB_ASPEN_TABLE_ID")
-bucket_Id = "69439f20003aac2fe7b9"
-file_Id = "69439f5f002fda9dc5a5"  # Use the actual file ID, not the filename
+bucket_Id = os.getenv("APPWRITE_BUCKET_ID")
+aspen_file_Id = os.getenv("APPWRITE_ASPEN_FILE_ID")
+fresenius_file_Id = os.getenv("APPWRITE_FRESENIUS_FILE_ID")
+
+print(aspen_file_Id)
+print(fresenius_file_Id)
