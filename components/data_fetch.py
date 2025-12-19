@@ -1,15 +1,15 @@
 
 from appwrite.query import Query
-from appwrite_db import tablesDB, todoDatabase, todoTable
+from appwrite_db import tablesDB, todoDatabase, aspen_file_Id, fresenius_file_Id, todoTableAspen, todoTableFresenius
 from datetime import datetime, date
 
 
 # Fetches meter readings from database at 06:00
-def fetch_new_data():
+def fetch_new_data(table_Id):
 
     response = tablesDB.list_rows(
         database_id=todoDatabase,
-        table_id=todoTable,
+        table_id=table_Id,
         queries=[Query.equal("time", "06:00")]
     )
     return response["rows"]
@@ -17,7 +17,8 @@ def fetch_new_data():
 
 # Load data on module import with error handling
 try:
-    rows = fetch_new_data()
+    rows_aspen = fetch_new_data(todoTableAspen)
+    rows_fresenius = fetch_new_data(todoTableFresenius)
 except Exception as e:
     print(f"Warning: Failed to fetch data on import: {e}")
     rows = []
