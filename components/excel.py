@@ -2,28 +2,31 @@
 import datetime
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, Alignment, PatternFill
-import os
-from data_fetch import rows, normalize_rows
+from data_fetch import normalized_rows_aspen, normalized_rows_fresenius
 from flask import Flask, send_file
 import io
-from appwrite_db import storage, bucket_Id, file_Id
+from appwrite_db import storage, bucket_Id, aspen_file_Id, fresenius_file_Id
 from appwrite.input_file import InputFile
-# Name of the Excel file to save data to
-FileName = "steam_data.xlsx"
+# Name of the Excel files to save data to
+AspenFileName = "steam_data_aspen.xlsx"
+FreseniusFileName = "steam_data_fresenius.xlsx"
 
 app = Flask(__name__)
 
 # Column headers for the Excel spreadsheet
-HEADERS = [
+HEADERS_ASPEN = [
     "Date", "Time", "Meter 1", "Bypass", "Meter Blue", "Meter Red", "Steam Flow Meter", "Aspen"
+]
+HEADERS_FRESENIUS = [
+    "Date", "Time", "Meter FK", "Make Up", "Meter SH", "HFO", "Steam Flow Meter 1", "Steam Flow Meter 2"
 ]
 
 # Get current date and time
-x = datetime.datetime.now()
+today = datetime.datetime.now()
 
 
 # Loads or creates an Excel workbook and creates a new sheet for the current month
-def get_workbook():
+def get_workbook(headers, file_Id):
 
     result = storage.get_file_download(
         bucket_id=bucket_Id,
@@ -34,8 +37,8 @@ def get_workbook():
 
     # If file exists, open it and add a new sheet named after the current month
     wb = load_workbook(excel_data)
-    ws = wb.create_sheet(title=x.strftime("%B"))
-    ws.append(HEADERS)
+    ws = wb.create_sheet(title=today.strftime("%B"))
+    ws.append(headers)
     # Style the header row
     for col in ws['1:1']:
         col.font = Font(size=12, bold=True)
@@ -67,8 +70,11 @@ def get_workbook():
 
 
 # Adds meter reading rows to the Excel sheet and saves the file
-def append_rows(rows):
-    wb, ws = get_workbook()
+
+
+def append_rows(rows, workbook, last_column):
+
+    wb, ws = workbook
 
     # Iterate through each row and add it to the worksheet
     for row in rows:
@@ -82,7 +88,7 @@ def append_rows(rows):
     # Get difference between last row and second last row for meter readings
     last_row = ws.max_row
     summary_row = last_row + 1
-    for col in range(3, 9):
+    for col in range(3, last_column + 1):
         first_value = ws.cell(row=2, column=col).value
         last_value = ws.cell(row=last_row, column=col).value
 
@@ -107,25 +113,46 @@ def append_rows(rows):
     return updated_workbook
 
 
-# Execute: Normalize the fetched data and write to Excel file
-def update_excel_file():
+# Execute: Normalize the fetched data and write to Excel files
+
+def update_aspen_excel_file():
     try:
-        File = append_rows(normalize_rows(rows))
+        workbook_aspen = get_workbook(HEADERS_ASPEN, aspen_file_Id)
+        File = append_rows(normalized_rows_aspen, workbook_aspen, 8)
         storage.delete_file(
             bucket_id=bucket_Id,
-            file_id=file_Id,
+            file_id=aspen_file_Id,
         )
         storage.create_file(
             bucket_id=bucket_Id,
-            file_id=file_Id,
-            file=InputFile.from_bytes(File.read(), FileName)
+            file_id=aspen_file_Id,
+            file=InputFile.from_bytes(File.read(), AspenFileName)
         )
-        print("Excel file updated successfully!")
+        print("Aspen Excel file updated successfully!")
     except Exception as e:
-        print(f"Error updating Excel file: {e}")
+        print(f"Error updating Aspen Excel file: {e}")
+
+
+def update_fresenius_excel_file():
+    try:
+        workbook_fresenius = get_workbook(HEADERS_FRESENIUS, fresenius_file_Id)
+        File = append_rows(normalized_rows_fresenius, workbook_fresenius, 8)
+        storage.delete_file(
+            bucket_id=bucket_Id,
+            file_id=fresenius_file_Id,
+        )
+        storage.create_file(
+            bucket_id=bucket_Id,
+            file_id=fresenius_file_Id,
+            file=InputFile.from_bytes(File.read(), FreseniusFileName)
+        )
+        print("Fresenius Excel file updated successfully!", File)
+    except Exception as e:
+        print(f"Error updating Fresenius Excel file: {e}")
 
 
 if __name__ == "__main__":
     print("Starting Excel update...")
-    update_excel_file()
+    update_fresenius_excel_file()
+    update_aspen_excel_file()
     print("Excel update script completed.")

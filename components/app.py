@@ -1,13 +1,14 @@
 
 import datetime
 import calendar
-from excel import update_excel_file
+from excel import update_aspen_excel_file, update_fresenius_excel_file
 
 
 def run_monthly_invoice_job():
     # Where the logic for fetching monthly steam logs and water usage is taking place
     print("Running monthly invoice job...")
-    update_excel_file()
+    update_aspen_excel_file()
+    update_fresenius_excel_file()
 
 
 def execute_scheduled_job():
