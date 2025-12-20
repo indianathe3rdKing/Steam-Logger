@@ -119,6 +119,11 @@ def update_aspen_excel_file():
     try:
         workbook_aspen = get_workbook(HEADERS_ASPEN, aspen_file_Id)
         File = append_rows(normalized_rows_aspen, workbook_aspen, 8)
+
+        with open(AspenFileName, "wb")as local_file:
+            local_file.write(File.read())
+            print("Aspen Excel file written locally :", local_file)
+
         storage.delete_file(
             bucket_id=bucket_Id,
             file_id=aspen_file_Id,
@@ -126,7 +131,7 @@ def update_aspen_excel_file():
         storage.create_file(
             bucket_id=bucket_Id,
             file_id=aspen_file_Id,
-            file=InputFile.from_bytes(File.read(), AspenFileName)
+            file=InputFile.from_path("./"+AspenFileName)
         )
         print("Aspen Excel file updated successfully!")
     except Exception as e:
@@ -137,6 +142,11 @@ def update_fresenius_excel_file():
     try:
         workbook_fresenius = get_workbook(HEADERS_FRESENIUS, fresenius_file_Id)
         File = append_rows(normalized_rows_fresenius, workbook_fresenius, 8)
+
+        with open(FreseniusFileName, "wb")as local_file:
+            local_file.write(File.read())
+            print("Fresenius Excel file written locally :", local_file)
+
         storage.delete_file(
             bucket_id=bucket_Id,
             file_id=fresenius_file_Id,
@@ -144,7 +154,7 @@ def update_fresenius_excel_file():
         storage.create_file(
             bucket_id=bucket_Id,
             file_id=fresenius_file_Id,
-            file=InputFile.from_bytes(File.read(), FreseniusFileName)
+            file=InputFile.from_path("./"+FreseniusFileName)
         )
         print("Fresenius Excel file updated successfully!", File)
     except Exception as e:
