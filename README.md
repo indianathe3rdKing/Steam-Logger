@@ -1,50 +1,105 @@
-# Welcome to your Expo app 👋
+# Steam Logger
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A production-oriented logging, validation, visualization, and export system for industrial steam and utility operations.
+Designed to capture meter data reliably, detect anomalies, and generate structured Excel reports suitable for operational review and invoicing.
 
-## Get started
+---
 
-1. Install dependencies
+## Overview
 
-   ```bash
-   npm install
-   ```
+Steam Logger is a full-stack application built to manage industrial steam and utility readings under real-world operating conditions. It provides a mobile-first interface for logging data, a dashboard for visualization, and an automated backend pipeline for exporting validated readings into Excel reports.
 
-2. Start the app
+The system is designed to handle incomplete readings, delayed entries, and operational variance while maintaining data integrity and traceability.
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## Core Features
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Meter Logging
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Steam flow
+- Makeup water (blue / red)
+- Condensate
+- Bypass tracking
+- Multi-meter support
 
-## Get a fresh project
+### Data Validation
 
-When you're ready, run:
+- Delta-based anomaly detection
+- Configurable thresholds per meter
+- Time-gap handling for delayed or missed readings
+- Controlled acceptance of out-of-range values when conditions allow
 
-```bash
-npm run reset-project
-```
+### Dashboard & Visualization
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Aggregated views of logged readings
+- Clear presentation of trends and differences
+- Designed for operational monitoring and review
 
-## Learn more
+### Automated Excel Export
 
-To learn more about developing your project with Expo, look at the following resources:
+- Generates `.xlsx` reports using `openpyxl`
+- Creates structured worksheets per export cycle
+- Consistent column layout for downstream processing
+- Suitable for invoicing, audits, and reporting
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## Tech Stack
 
-Join our community of developers creating universal apps.
+**Frontend**
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- React Native (Expo)
+- TypeScript
+- Appwrite SDK
+
+**Backend / Automation**
+
+- Python
+- openpyxl
+- Appwrite (database & storage)
+- Scheduled execution compatible (cron / cloud functions)
+
+---
+
+## Architecture
+
+- Separation of UI, business logic, and export pipeline
+- Excel generation independent of user interaction
+- Supports local execution and cloud deployment
+- Storage layer abstracted for portability
+
+---
+
+## Use Case
+
+Steam Logger is intended for my operator environment where:
+
+- Readings may be missed or delayed
+- Data accuracy is critical
+- Reports must remain consistent despite operational noise
+- Automation reduces manual intervention
+
+---
+
+## Screenshots / Demo
+
+### Application Views
+
+<img src="assets/steam logger/pic q.jpg" alt="Dashboard Overview" width="100%" style="margin: 20px 0; border-radius: 8px;">
+
+<img src="assets/steam logger/picture 2.jpg" alt="Meter Readings Interface" width="100%" style="margin: 20px 0; border-radius: 8px;">
+
+<img src="assets/steam logger/picture 3.jpg" alt="Data Validation & Processing" width="100%" style="margin: 20px 0; border-radius: 8px;">
+
+<img src="assets/steam logger/picture 4.jpg" alt="Export Workflow" width="100%" style="margin: 20px 0; border-radius: 8px;">
+
+<img src="assets/steam logger/picture 5.jpg" alt="Reports & Analytics" width="100%" style="margin: 20px 0; border-radius: 8px;">
+
+---
+
+## License
+
+Internal / Demonstration Use
+
+---
