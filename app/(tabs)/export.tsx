@@ -22,9 +22,31 @@ export default function ExportPage() {
   }
   return (
     <View style={styles.container}>
-      <Button onPress={handlePressAspen}>Export Sheet(Aspen)</Button>
+      <Button
+        style={styles.button}
+        icon="file-export"
+        onPress={handlePressAspen}
+        theme={{
+          colors: {
+            primary: "#304a8fff",
+          },
+        }}
+      >
+        Export Sheet(Aspen)
+      </Button>
 
-      <Button onPress={handlePressFresenius}>Export Sheet(Fresenius)</Button>
+      <Button
+        style={styles.button}
+        icon="file-export"
+        onPress={handlePressFresenius}
+        theme={{
+          colors: {
+            primary: "#304a8fff",
+          },
+        }}
+      >
+        Export Sheet(Fresenius)
+      </Button>
     </View>
   );
 }
@@ -34,5 +56,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  button: {
+    margin: 10,
+    fontSize: 30,
   },
 });
