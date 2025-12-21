@@ -86,15 +86,15 @@ Steam Logger is intended for my operator environment where:
 
 ### Application Views
 
-<img src="assets/steam logger/pic q.jpg" alt="Dashboard Overview" width="100%" style="margin: 20px 0; border-radius: 8px;">
+<img src="assets/steam%20logger/pic%20q.jpg" alt="Dashboard Overview" width="450">
 
-<img src="assets/steam logger/picture 2.jpg" alt="Meter Readings Interface" width="100%" style="margin: 20px 0; border-radius: 8px;">
+<img src="assets/steam%20logger/picture%202.jpg" alt="Meter Readings Interface" width="450">
 
-<img src="assets/steam logger/picture 3.jpg" alt="Data Validation & Processing" width="100%" style="margin: 20px 0; border-radius: 8px;">
+<img src="assets/steam%20logger/picture%203.jpg" alt="Data Validation & Processing" width="450">
 
-<img src="assets/steam logger/picture 4.jpg" alt="Export Workflow" width="100%" style="margin: 20px 0; border-radius: 8px;">
+<img src="assets/steam%20logger/picture%204.jpg" alt="Export Workflow" width="450">
 
-<img src="assets/steam logger/picture 5.jpg" alt="Reports & Analytics" width="100%" style="margin: 20px 0; border-radius: 8px;">
+<img src="assets/steam%20logger/picture%205.jpg" alt="Reports & Analytics" width="450">
 
 ---
 
