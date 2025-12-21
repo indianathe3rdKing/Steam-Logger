@@ -12,6 +12,7 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: "#f5f5f5",
         },
+        animation: "shift",
       }}
     >
       {" "}
