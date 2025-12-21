@@ -45,6 +45,11 @@ def get_workbook(headers, file_Id):
         col.alignment = Alignment(horizontal="center")
         ws.column_dimensions[col.column_letter].width = 15
         ws.column_dimensions["G"].width = 20
+
+        if col.value == "Steam Flow Meter":
+            ws.column_dimensions["H"].width = 20
+        elif col.value == "Steam Flow Meter 2":
+            ws.column_dimensions["H"].width = 25
         # thick = Side(style="thick", color="000000")
         # ws[col.column_letter+"1"].border = Border(
         #     left=thick, right=thick, top=thick, bottom=thick)
