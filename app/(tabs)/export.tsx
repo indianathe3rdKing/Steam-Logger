@@ -10,7 +10,7 @@ export default function ExportPage() {
   async function handlePressAspen() {
     const supportUrl = await Linking.canOpenURL(aspenUrl);
     if (supportUrl) {
-      await Linking.openURL(freseniusUrl);
+      await Linking.openURL(aspenUrl);
     }
   }
   async function handlePressFresenius() {
