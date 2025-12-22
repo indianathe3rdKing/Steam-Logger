@@ -3,13 +3,12 @@ import { Linking, StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
 export default function ExportPage() {
   const freseniusUrl =
-    "https://fra.cloud.appwrite.io/v1/storage/buckets/69439f20003aac2fe7b9/files/69470673001a6e940b07/view?project=6902702b00168de30b77&mode=adminx";
+    "https://fra.cloud.appwrite.io/v1/storage/buckets/69439f20003aac2fe7b9/files/6948fc62003d3f13bbd7/view?project=6902702b00168de30b77&mode=admin";
 
   const aspenUrl =
-    "https://fra.cloud.appwrite.io/v1/storage/buckets/69439f20003aac2fe7b9/files/6947066000343d0465b6/view?project=6902702b00168de30b77&mode=admin";
-
+    "https://fra.cloud.appwrite.io/v1/storage/buckets/69439f20003aac2fe7b9/files/6948fc56000c92df1a54/view?project=6902702b00168de30b77&mode=admin";
   async function handlePressAspen() {
-    const supportUrl = await Linking.canOpenURL(freseniusUrl);
+    const supportUrl = await Linking.canOpenURL(aspenUrl);
     if (supportUrl) {
       await Linking.openURL(freseniusUrl);
     }
