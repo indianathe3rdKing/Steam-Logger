@@ -1,13 +1,12 @@
 # Steam Logger
 
-A production-oriented logging, validation, visualization, and export system for industrial steam and utility operations.
-Designed to capture meter data reliably, detect anomalies, and generate structured Excel reports suitable for operational review and invoicing.
+An app I created for my previous role to to help make easier and automate the process of logging stea steam instead of using the manual process of pen and paper.
 
 ---
 
 ## Overview
 
-Steam Logger is a full-stack application built to manage industrial steam and utility readings under real-world operating conditions. It provides a mobile-first interface for logging data, a dashboard for visualization, and an automated backend pipeline for exporting validated readings into Excel reports.
+Steam Logger is a full-stack application built to manage industrial steam and utility readings under real-world operating conditions. It provides a mobile-first interface for logging data, a desktop dashboard for visualization, and an automated backend pipeline for exporting validated readings into Excel reports.
 
 The system is designed to handle incomplete readings, delayed entries, and operational variance while maintaining data integrity and traceability.
 
